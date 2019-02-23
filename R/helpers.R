@@ -25,7 +25,7 @@ paste_enum <- function(..., sep = ", ", sep2 = " and "){
 # # [1] "a, b and c"
 
 
-jxyc_checks <- function(x, y, by, check){
+safe_check <- function(x, y, by, check){
   # guess by and act depending on "j" check
   j_check <- check_for_letter(check,"j")
   if(is.null(by) && j_check$fun == "abort")
