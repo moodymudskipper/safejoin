@@ -77,12 +77,12 @@ eat <- function(x, y, ..., by = NULL, fun = NULL,
       # if it's a function, rename y conflicted columns to temp names,
       # define function and switch flag
       conflict_fun <- rlang::as_function(conflict)
-      y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_patch*"))
+      y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_conflicted*"))
       apply_conflict_fun <- TRUE
     } else if (conflict == "patch") {
       # if it's "patch", rename y conflicted columns to temp names,
       # creates column to know where matches occured and switch flag
-      y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_patch*"))
+      y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_conflicted*"))
       #x <- mutate(x, `*temp_dummy_x*` = 1)
       y <- dplyr::mutate(y, `*temp_dummy_y*` = 1)
       patch <- TRUE
@@ -106,13 +106,13 @@ eat <- function(x, y, ..., by = NULL, fun = NULL,
   if (patch) {
     dummy_col <- "*temp_dummy_y*"
     rows_lgl <- !is.na(res[[dummy_col]])
-    temp_cols <-  paste0("*",common_aux,"_patch*")
+    temp_cols <-  paste0("*",common_aux,"_conflicted*")
     res[rows_lgl, common_aux] <- res[rows_lgl,temp_cols]
     res <- dplyr::mutate_at(res,c(dummy_col,temp_cols), ~NULL)
   } else if (apply_conflict_fun) {
     for (aux in common_aux) {
-      res[[aux]] <- conflict_fun(res[[aux]], res[[paste0("*",aux,"_patch*")]])
-      temp_cols <-  paste0("*",common_aux,"_patch*")
+      res[[aux]] <- conflict_fun(res[[aux]], res[[paste0("*",aux,"_conflicted*")]])
+      temp_cols <-  paste0("*",common_aux,"_conflicted*")
     }
     res <- dplyr::mutate_at(res,temp_cols, ~NULL)
   }
