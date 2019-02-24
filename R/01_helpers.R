@@ -27,7 +27,7 @@ safe_check <- function(x, y, by, check, skip_some = FALSE){
   # guess by and act depending on "b" check
   b_check <- check_for_letter(check,"b")
   if (is.null(by) && b_check$fun == "abort")
-    abort("`by`is `NULL`, joining columns should be explicit")
+    abort("`by`is `NULL`, join columns should be explicit")
   by <- purrr::quietly(dplyr::common_by)(by, x, y)
   if (length(by$messages)) get(b_check$fun)(by$messages)
   by <- by$result
