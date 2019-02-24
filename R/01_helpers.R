@@ -118,7 +118,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
     by_y_syms <- rlang::syms(by$y)
 
     # subset y by column
-    if (rlang::dots_n(...)) y <- dplyr::select(y, !!!by_y_syms, ...)
+    if (rlang::dots_n(...)) y <- dplyr::select(y, ..., !!!by_y_syms)
 
     # prefix y cols if relevant
     if (!is.null(prefix)) {
