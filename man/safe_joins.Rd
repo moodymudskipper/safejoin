@@ -18,17 +18,19 @@ safe_right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
   ".y"), ..., check = "~blC", conflict = NULL)
 
 safe_inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~blC")
+  ".y"), ..., check = "~blC", conflict = NULL)
 
 safe_full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~blC")
+  ..., check = "~blC", conflict = NULL)
 
-safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC")
+safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC",
+  conflict = NULL)
 
-safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC")
+safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC",
+  conflict = NULL)
 
 safe_nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE,
-  name = NULL, ..., check = "~blC")
+  name = NULL, ..., check = "~blC", conflict = NULL)
 }
 \arguments{
 \item{x, y}{tbls to join}

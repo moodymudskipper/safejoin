@@ -14,7 +14,9 @@ LazyData: true
 Imports:
     dplyr,
     rlang,
-    purrr
+    purrr,
+    stats,
+    utils
 Suggests: knitr,
     rmarkdown,
     testthat

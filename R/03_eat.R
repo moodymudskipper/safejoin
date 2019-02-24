@@ -33,7 +33,7 @@ eat <- function(.x, .y, ..., .by = NULL, .agg = NULL,
 
   l <- safe_check(.x, .y, .by, .check, .conflict,
                   in_eat = TRUE, .agg, .prefix, ...)
-  res <- dplyr::left_join(l$x,l$y, by = setNames(l$by$y,l$by$x))
+  res <- dplyr::left_join(l$x,l$y, by = `names<-`(l$by$y,l$by$x))
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res

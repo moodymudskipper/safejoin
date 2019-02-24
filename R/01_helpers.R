@@ -19,7 +19,7 @@ ignore <- function(...) NULL
 paste_enum <- function(..., sep = ", ", sep2 = " and "){
   l <- unlist(list(...))
   if (length(l) <= 1) return(l)
-  paste(paste(head(l,-1),collapse = sep), tail(l,1), sep = sep2)
+  paste(paste(utils::head(l,-1),collapse = sep), utils::tail(l,1), sep = sep2)
 }
 
 
@@ -65,9 +65,9 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
   m_check <- check_for_letter(check,"m")
   if (m_check$lgl && nrow(
     unmatched <- dplyr::setdiff(dplyr::distinct(x[by$x]),
-                                setNames(dplyr::distinct(y[by$y]),by$x)))) {
+                                `names<-`(dplyr::distinct(y[by$y]),by$x)))) {
     txt <- paste("x has unmatched sets of joining values: \n%s",
-                 paste(capture.output(unmatched),collapse = "\n"))
+                 paste(utils::capture.output(unmatched),collapse = "\n"))
     get(m_check$fun)(txt)
   }
 
@@ -75,9 +75,9 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
   n_check <- check_for_letter(check,"n")
   if (n_check$lgl && nrow(
     unmatched <- dplyr::setdiff(dplyr::distinct(y[by$y]),
-                                setNames(dplyr::distinct(x[by$x]),by$y)))) {
+                                `names<-`(dplyr::distinct(x[by$x]),by$y)))) {
     txt <- paste("y has unmatched sets of joining values: \n%s",
-                 paste(capture.output(unmatched),collapse = "\n"))
+                 paste(utils::capture.output(unmatched),collapse = "\n"))
     get(n_check$fun)(txt)
   }
 
@@ -87,7 +87,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
     absent_comb <- dplyr::setdiff(
       purrr::cross_df(d <- dplyr::distinct(x[by$x])), d))) {
     txt <- paste("Some combinations of joining values are absent from x: \n%s",
-                 paste(capture.output(absent_comb),collapse = "\n"))
+                 paste(utils::capture.output(absent_comb),collapse = "\n"))
     get(e_check$fun)(txt)
   }
 
@@ -97,7 +97,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
       nrow( absent_comb <- dplyr::setdiff(
         purrr::cross_df(d <- dplyr::distinct(y[by$y])), d))) {
     txt <- paste("Some combinations of joining values are absent from y: \n%s",
-                 paste(capture.output(absent_comb),collapse = "\n"))
+                 paste(utils::capture.output(absent_comb),collapse = "\n"))
     get(f_check$fun)(txt)
   }
 
