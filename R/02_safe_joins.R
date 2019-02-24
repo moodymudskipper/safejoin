@@ -9,7 +9,7 @@
 #'     in *dplyr* is to trigger a message}
 #'   \item{c}{as in **c**olumn **c**onflict, check if, among non join
 #'   columns, some column names are found in both `x` and `y`. Default behavior
-#'   in *dplyr*'s joining functions is to suffix them silently. }
+#'   in *dplyr*'s joining functions is to suffix them silently.}
 #'   \item{u}{as in **u**nique, check if no set of values of join columns
 #'   is duplicated in `x`}
 #'   \item{v}{the letter after **u**, check if no set of values of join columns
@@ -39,22 +39,26 @@ NULL
 #' @export
 #' @rdname safe_joins
 safe_left_join <- function(x, y, by = NULL, copy = FALSE,
-                                  suffix = c(".x", ".y"), ...,
-                                  check = "~bC") {
-  l <- safe_check(x, y, by, check)
-  dplyr::left_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
-             suffix = c(".x", ".y"), ...)
+                           suffix = c(".x", ".y"), ...,
+                           check = "~bC", conflict = NULL){
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::left_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, suffix, ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
 
 #' @export
 #' @rdname safe_joins
 safe_right_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~bC") {
-
-  l <- safe_check(x, y, by, check)
-  dplyr::right_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
+                           check = "~bC", conflict = NULL) {
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::right_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
                    suffix = c(".x", ".y"), ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
 
 #' @export
@@ -64,9 +68,12 @@ safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
                            check = "~bC"
 ) {
 
-  l <- safe_check(x, y, by, check)
-  dplyr::inner_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::inner_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
                    suffix = c(".x", ".y"), ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
 
 #' @export
@@ -76,9 +83,12 @@ safe_full_join <- function(x, y, by = NULL, copy = FALSE,
                            check = "~bC"
 ) {
 
-  l <- safe_check(x, y, by, check)
-  dplyr::full_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::full_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
                    suffix = c(".x", ".y"), ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
 
 #' @export
@@ -87,23 +97,31 @@ safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
                            check = "~bC"
 ) {
 
-  l <- safe_check(x, y, by, check)
-  dplyr::semi_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, ...)
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::semi_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
 
 #' @export
 #' @rdname safe_joins
 safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
                            check = "~bC") {
-  l <- safe_check(x, y, by, check)
-  dplyr::anti_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, ...)
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::anti_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
 
 #' @export
 #' @rdname safe_joins
 safe_nest_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE,
                            name = NULL, ..., check = "~bC"){
-  l <- safe_check(x, y, by, check)
-  dplyr::nest_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, keep, name, ...)
+  l <- safe_check(x, y, by, check, conflict)
+  res <- dplyr::nest_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, keep, name, ...)
+  res <- resolve_conflicts(
+    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
+  res
 }
-

@@ -13,5 +13,14 @@ test_that("conflict works", {
   expect_equal(
     x %>% eat(y, .by = "name", .conflict = "patch") %>% pull(plays),
     c("GUITAR", "BASS", NA))
+  expect_equal(
+    x %>% safe_left_join(y, by = "name", conflict = coalesce) %>% pull(plays),
+    c("GUITAR", "bass", "guitar"))
+  expect_equal(
+    x %>% safe_left_join(y, by = "name", conflict = ~coalesce(.y,.x))  %>% pull(plays),
+    c("GUITAR", "BASS", "guitar"))
+  expect_equal(
+    x %>% safe_left_join(y, by = "name", conflict = "patch") %>% pull(plays),
+    c("GUITAR", "BASS", NA))
 })
 
