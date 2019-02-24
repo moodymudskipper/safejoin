@@ -305,6 +305,7 @@ Same as `safe_left_join` :
 
 ``` r
 band_members_extended %>% eat(band_instruments_extended)
+#> Joining, by = c("name", "cooks")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <chr>     <chr> 
@@ -312,7 +313,7 @@ band_members_extended %>% eat(band_instruments_extended)
 #> 2 John  Beatles pizza     guitar
 #> 3 Paul  Beatles spaghetti <NA>  
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, by="name")
+band_members_extended %>% eat(band_instruments_extended, by="name", check ="")
 #> # A tibble: 4 x 5
 #>   name  band    cooks.x   plays  cooks.y
 #>   <chr> <chr>   <fct>     <chr>  <fct>  
@@ -326,6 +327,7 @@ Rename eaten columns :
 
 ``` r
 band_members_extended %>% eat(band_instruments_extended, prefix = "NEW")
+#> Joining, by = c("name", "cooks")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     NEW_plays
 #>   <chr> <chr>   <chr>     <chr>    
@@ -333,14 +335,6 @@ band_members_extended %>% eat(band_instruments_extended, prefix = "NEW")
 #> 2 John  Beatles pizza     guitar   
 #> 3 Paul  Beatles spaghetti <NA>     
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, by="name")
-#> # A tibble: 4 x 5
-#>   name  band    cooks.x   plays  cooks.y
-#>   <chr> <chr>   <fct>     <chr>  <fct>  
-#> 1 Mick  Stones  pasta     <NA>   <NA>   
-#> 2 John  Beatles pizza     guitar pizza  
-#> 3 Paul  Beatles spaghetti bass   pasta  
-#> 4 John  The Who pizza     guitar pizza
 ```
 
 Eat `plays` column only:
@@ -435,6 +429,7 @@ In cases of matching to many (i.e. the join columns don't form a unique key for 
 
 ``` r
 band_instruments_extended %>% eat(band_members_extended)
+#> Joining, by = c("name", "cooks")
 #> # A tibble: 4 x 4
 #>   name  plays  cooks band   
 #>   <chr> <chr>  <chr> <chr>  
@@ -443,6 +438,7 @@ band_instruments_extended %>% eat(band_members_extended)
 #> 3 Paul  bass   pasta <NA>   
 #> 4 Keith guitar pizza <NA>
 band_instruments_extended %>% eat(band_members_extended, fun = ~paste(.,collapse="/"))
+#> Joining, by = c("name", "cooks")
 #> # A tibble: 3 x 4
 #>   name  plays  cooks band           
 #>   <chr> <chr>  <chr> <chr>          

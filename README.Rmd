@@ -199,14 +199,13 @@ Same as `safe_left_join` :
 
 ```{r}
 band_members_extended %>% eat(band_instruments_extended)
-band_members_extended %>% eat(band_instruments_extended, by="name")
+band_members_extended %>% eat(band_instruments_extended, by="name", check ="")
 ```
 
 Rename eaten columns :
 
 ```{r}
 band_members_extended %>% eat(band_instruments_extended, prefix = "NEW")
-band_members_extended %>% eat(band_instruments_extended, by="name")
 ```
 
 Eat `plays` column only:

@@ -40,7 +40,7 @@ NULL
 #' @rdname safe_joins
 safe_left_join <- function(x, y, by = NULL, copy = FALSE,
                                   suffix = c(".x", ".y"), ...,
-                                  check = "~jC") {
+                                  check = "~bC") {
   l <- safe_check(x, y, by, check)
   dplyr::left_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
              suffix = c(".x", ".y"), ...)
@@ -50,7 +50,7 @@ safe_left_join <- function(x, y, by = NULL, copy = FALSE,
 #' @rdname safe_joins
 safe_right_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~jC") {
+                           check = "~bC") {
 
   l <- safe_check(x, y, by, check)
   dplyr::right_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
@@ -61,7 +61,7 @@ safe_right_join <- function(x, y, by = NULL, copy = FALSE,
 #' @rdname safe_joins
 safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~jC"
+                           check = "~bC"
 ) {
 
   l <- safe_check(x, y, by, check)
@@ -73,7 +73,7 @@ safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
 #' @rdname safe_joins
 safe_full_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~jC"
+                           check = "~bC"
 ) {
 
   l <- safe_check(x, y, by, check)
@@ -84,7 +84,7 @@ safe_full_join <- function(x, y, by = NULL, copy = FALSE,
 #' @export
 #' @rdname safe_joins
 safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
-                           check = "~jC"
+                           check = "~bC"
 ) {
 
   l <- safe_check(x, y, by, check)
@@ -94,7 +94,7 @@ safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
 #' @export
 #' @rdname safe_joins
 safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
-                           check = "~jC") {
+                           check = "~bC") {
   l <- safe_check(x, y, by, check)
   dplyr::anti_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, ...)
 }
@@ -102,7 +102,7 @@ safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
 #' @export
 #' @rdname safe_joins
 safe_nest_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE,
-                           name = NULL, ..., check = "~jC"){
+                           name = NULL, ..., check = "~bC"){
   l <- safe_check(x, y, by, check)
   dplyr::nest_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, keep, name, ...)
 }
