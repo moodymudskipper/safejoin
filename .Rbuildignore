@@ -1,3 +1,6 @@
+^exclude$
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.Rmd$
+^README-.*\.png$

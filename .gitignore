@@ -1,3 +1,5 @@
+exclude
 .Rproj.user
 .Rhistory
 .RData
+inst/doc
