@@ -73,7 +73,11 @@ eat <- function(x, y, ..., by = NULL, fun = NULL,
   if ((c_check$lgl || !is.null(conflict)) &&
       length(common_aux <-
              intersect(setdiff(names(x),by$x), setdiff(names(y),by$y)))) {
-    if (is.function(conflict) || inherits(conflict,"formula")) {
+    if (is.null(conflict)){
+      # else trigger appropriate output
+      txt <- sprintf("Conflict of auxiliary columns: %s", paste_enum(common_aux))
+      get(c_check$fun)(txt)
+    } else if (is.function(conflict) || inherits(conflict,"formula")) {
       # if it's a function, rename y conflicted columns to temp names,
       # define function and switch flag
       conflict_fun <- rlang::as_function(conflict)
@@ -86,12 +90,9 @@ eat <- function(x, y, ..., by = NULL, fun = NULL,
       #x <- mutate(x, `*temp_dummy_x*` = 1)
       y <- dplyr::mutate(y, `*temp_dummy_y*` = 1)
       patch <- TRUE
-    } else {
-      # else trigger appropriate output
-      txt <- sprintf("Conflict of auxiliary columns: %s", paste_enum(common_aux))
-      get(c_check$fun)(txt)
     }
   }
+
 
   # check y unicity (might be executed only if not summarized)
   v_check <- check_for_letter(check,"v")
