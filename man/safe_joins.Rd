@@ -12,23 +12,23 @@
 \title{Safe joins}
 \usage{
 safe_left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~jC")
+  ..., check = "~bC", conflict = NULL)
 
 safe_right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~jC")
+  ".y"), ..., check = "~bC", conflict = NULL)
 
 safe_inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~jC")
+  ".y"), ..., check = "~bC")
 
 safe_full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~jC")
+  ..., check = "~bC")
 
-safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~jC")
+safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~bC")
 
-safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~jC")
+safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~bC")
 
 safe_nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE,
-  name = NULL, ..., check = "~jC")
+  name = NULL, ..., check = "~bC")
 }
 \arguments{
 \item{x, y}{tbls to join}
@@ -72,7 +72,7 @@ things on the fly and either \code{inform}, \code{warn} or \code{abort} as a res
 in \emph{dplyr} is to trigger a message}
 \item{c}{as in \strong{c}olumn \strong{c}onflict, check if, among non join
 columns, some column names are found in both \code{x} and \code{y}. Default behavior
-in \emph{dplyr}'s joining functions is to suffix them silently. }
+in \emph{dplyr}'s joining functions is to suffix them silently.}
 \item{u}{as in \strong{u}nique, check if no set of values of join columns
 is duplicated in \code{x}}
 \item{v}{the letter after \strong{u}, check if no set of values of join columns

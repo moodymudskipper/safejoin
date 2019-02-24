@@ -4,38 +4,30 @@
 \alias{eat}
 \title{Eat columns from another data frame}
 \usage{
-eat(x, y, ..., by = NULL, fun = NULL, check = "~j",
-  conflict = NULL, prefix = NULL)
+eat(.x, .y, ..., .by = NULL, .agg = NULL, .check = "~bC",
+  .conflict = NULL, .prefix = NULL)
 }
 \arguments{
-\item{x, y}{tbls to join}
+\item{.x, .y}{tbls to join}
 
 \item{...}{One or more unquoted expressions, passed to \code{dplyr::select},
 defining the columns to keep from \code{y}}
 
-\item{by}{a character vector of variables to join by.  If \code{NULL}, the
-default, \code{*_join()} will do a natural join, using all variables with
-common names across the two tables. A message lists the variables so
-that you can check they're right (to suppress the message, simply
-explicitly list the variables that you want to join).
+\item{.by}{a character vector of variables to join by.}
 
-To join by different variables on x and y use a named vector.
-For example, \code{by = c("a" = "b")} will match \code{x.a} to
-\code{y.b}.}
-
-\item{fun}{function or formula or \code{NULL}, if not \code{NULL}, \code{y}
+\item{.agg}{function or formula or \code{NULL}, if not \code{NULL}, \code{y}
 will be grouped by its \code{by} columns and \code{fun} will be applied to
 all kept columns from {y}}
 
-\item{check}{a string, see details}
+\item{.check}{a string, see details about \code{check} parameter in ?safe_joins`}
 
-\item{conflict}{if \code{NULL}, in case of column conflict both columns are
+\item{.conflict}{if \code{NULL}, in case of column conflict both columns are
 suffixed as in \emph{dplyr}, if a function of two parameters or a formula,
 a function is applied on both columns. If the string "patch", matched
 values from \code{y} will overwrite existing values in \code{x} while the other
 values will be kept}
 
-\item{prefix}{prefix of new columns or function/formula to apply on names of new
+\item{.prefix}{prefix of new columns or function/formula to apply on names of new
 columns}
 }
 \value{
