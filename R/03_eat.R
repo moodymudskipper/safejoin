@@ -24,9 +24,9 @@
 #' @return a data frame
 #' @export
 eat <- function(x, y, ..., by = NULL, fun = NULL,
-                 check = "~bC",
-                 conflict = NULL,
-                 prefix = NULL) {
+                check = "~bC",
+                conflict = NULL,
+                prefix = NULL) {
 
   #conflict <- match.arg(conflict,)
 
@@ -71,26 +71,26 @@ eat <- function(x, y, ..., by = NULL, fun = NULL,
   patch <- FALSE
   apply_conflict_fun <- FALSE
   if ((c_check$lgl || !is.null(conflict)) &&
-     length(common_aux <-
-            intersect(setdiff(names(x),by$x), setdiff(names(y),by$y)))) {
+      length(common_aux <-
+             intersect(setdiff(names(x),by$x), setdiff(names(y),by$y)))) {
     if (is.function(conflict) || inherits(conflict,"formula")) {
       # if it's a function, rename y conflicted columns to temp names,
       # define function and switch flag
       conflict_fun <- rlang::as_function(conflict)
       y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_patch*"))
       apply_conflict_fun <- TRUE
-      } else if (conflict == "patch") {
-        # if it's "patch", rename y conflicted columns to temp names,
-        # creates column to know where matches occured and switch flag
-          y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_patch*"))
-          #x <- mutate(x, `*temp_dummy_x*` = 1)
-          y <- dplyr::mutate(y, `*temp_dummy_y*` = 1)
-          patch <- TRUE
-      } else {
-        # else trigger appropriate output
-        txt <- sprintf("Conflict of auxiliary columns: %s", paste_enum(common_aux))
-        get(c_check$fun)(txt)
-        }
+    } else if (conflict == "patch") {
+      # if it's "patch", rename y conflicted columns to temp names,
+      # creates column to know where matches occured and switch flag
+      y <- dplyr::rename_at(y, common_aux,~paste0("*", .x, "_patch*"))
+      #x <- mutate(x, `*temp_dummy_x*` = 1)
+      y <- dplyr::mutate(y, `*temp_dummy_y*` = 1)
+      patch <- TRUE
+    } else {
+      # else trigger appropriate output
+      txt <- sprintf("Conflict of auxiliary columns: %s", paste_enum(common_aux))
+      get(c_check$fun)(txt)
+    }
   }
 
   # check y unicity (might be executed only if not summarized)
@@ -111,10 +111,10 @@ eat <- function(x, y, ..., by = NULL, fun = NULL,
     res <- dplyr::mutate_at(res,c(dummy_col,temp_cols), ~NULL)
   } else if (apply_conflict_fun) {
     for (aux in common_aux) {
-    res[[aux]] <- conflict_fun(res[[aux]], res[[paste0("*",aux,"_patch*")]])
-    temp_cols <-  paste0("*",common_aux,"_patch*")
-    res <- dplyr::mutate_at(res,temp_cols, ~NULL)
+      res[[aux]] <- conflict_fun(res[[aux]], res[[paste0("*",aux,"_patch*")]])
+      temp_cols <-  paste0("*",common_aux,"_patch*")
     }
+    res <- dplyr::mutate_at(res,temp_cols, ~NULL)
   }
   res
 }
