@@ -31,6 +31,11 @@
 #' @inheritParams dplyr::join
 #' @param x,y	tbls to join
 #' @param check a string, see details
+#' @param conflict if `NULL`, in case of column conflict both columns are
+#'   suffixed as in *dplyr*, if a function of two parameters or a formula,
+#'   a function is applied on both columns. If the string "patch", matched
+#'   values from `y` will overwrite existing values in `x` while the other
+#'   values will be kept
 #'
 #'
 #' @name safe_joins
@@ -40,7 +45,7 @@ NULL
 #' @rdname safe_joins
 safe_left_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~bC", conflict = NULL){
+                           check = "~blC", conflict = NULL){
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::left_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, suffix, ...)
   res <- resolve_conflicts(
@@ -52,7 +57,7 @@ safe_left_join <- function(x, y, by = NULL, copy = FALSE,
 #' @rdname safe_joins
 safe_right_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~bC", conflict = NULL) {
+                           check = "~blC", conflict = NULL) {
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::right_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy,
                    suffix = c(".x", ".y"), ...)
@@ -65,7 +70,7 @@ safe_right_join <- function(x, y, by = NULL, copy = FALSE,
 #' @rdname safe_joins
 safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~bC"
+                           check = "~blC"
 ) {
 
   l <- safe_check(x, y, by, check, conflict)
@@ -80,7 +85,7 @@ safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
 #' @rdname safe_joins
 safe_full_join <- function(x, y, by = NULL, copy = FALSE,
                            suffix = c(".x", ".y"), ...,
-                           check = "~bC"
+                           check = "~blC"
 ) {
 
   l <- safe_check(x, y, by, check, conflict)
@@ -94,7 +99,7 @@ safe_full_join <- function(x, y, by = NULL, copy = FALSE,
 #' @export
 #' @rdname safe_joins
 safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
-                           check = "~bC"
+                           check = "~blC"
 ) {
 
   l <- safe_check(x, y, by, check, conflict)
@@ -107,7 +112,7 @@ safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
 #' @export
 #' @rdname safe_joins
 safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
-                           check = "~bC") {
+                           check = "~blC") {
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::anti_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, ...)
   res <- resolve_conflicts(
@@ -118,7 +123,7 @@ safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
 #' @export
 #' @rdname safe_joins
 safe_nest_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE,
-                           name = NULL, ..., check = "~bC"){
+                           name = NULL, ..., check = "~blC"){
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::nest_join(l$x, l$y, by = setNames(l$by$y,l$by$x), copy, keep, name, ...)
   res <- resolve_conflicts(

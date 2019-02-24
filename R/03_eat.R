@@ -16,18 +16,18 @@
 #'   will be grouped by its \code{by} columns and \code{fun} will be applied to
 #'   all kept columns from {y}
 #'
-#' @param .check a string, see details about `check` parameter in ?safe_joins`
+#' @param .check a string, see details about `check` parameter in ?safe_joins
 #' @param .conflict if `NULL`, in case of column conflict both columns are
 #'   suffixed as in *dplyr*, if a function of two parameters or a formula,
 #'   a function is applied on both columns. If the string "patch", matched
 #'   values from `y` will overwrite existing values in `x` while the other
-#'   values will be kept
+#'   values will be kept`
 #' @param .prefix prefix of new columns or function/formula to apply on names of new
 #'   columns
 #' @return a data frame
 #' @export
 eat <- function(.x, .y, ..., .by = NULL, .agg = NULL,
-                .check = "~bC",
+                .check = "~blC",
                 .conflict = NULL,
                 .prefix = NULL) {
 

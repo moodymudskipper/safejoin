@@ -12,23 +12,23 @@
 \title{Safe joins}
 \usage{
 safe_left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~bC", conflict = NULL)
+  ..., check = "~blC", conflict = NULL)
 
 safe_right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~bC", conflict = NULL)
+  ".y"), ..., check = "~blC", conflict = NULL)
 
 safe_inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~bC")
+  ".y"), ..., check = "~blC")
 
 safe_full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~bC")
+  ..., check = "~blC")
 
-safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~bC")
+safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC")
 
-safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~bC")
+safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC")
 
 safe_nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE,
-  name = NULL, ..., check = "~bC")
+  name = NULL, ..., check = "~blC")
 }
 \arguments{
 \item{x, y}{tbls to join}
@@ -56,6 +56,12 @@ Should be a character vector of length 2.}
 to control how \code{NA} values are matched.  See \link{join.tbl_df} for more.}
 
 \item{check}{a string, see details}
+
+\item{conflict}{if \code{NULL}, in case of column conflict both columns are
+suffixed as in \emph{dplyr}, if a function of two parameters or a formula,
+a function is applied on both columns. If the string "patch", matched
+values from \code{y} will overwrite existing values in \code{x} while the other
+values will be kept}
 
 \item{keep}{If \code{TRUE} the by columns are kept in the nesting joins.}
 

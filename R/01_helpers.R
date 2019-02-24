@@ -122,7 +122,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
 
     # prefix y cols if relevant
     if (!is.null(prefix)) {
-      if (is.character(prefix)) prefix <- eval(rlang::expr( ~stringr::str_c(!!prefix, "_", .)))
+      if (is.character(prefix)) prefix <- eval(rlang::expr( ~paste0(!!prefix, "_", .)))
       y <- dplyr::rename_at(y, setdiff(names(y),by$y), prefix)
     }
 

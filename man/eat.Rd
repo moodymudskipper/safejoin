@@ -4,7 +4,7 @@
 \alias{eat}
 \title{Eat columns from another data frame}
 \usage{
-eat(.x, .y, ..., .by = NULL, .agg = NULL, .check = "~bC",
+eat(.x, .y, ..., .by = NULL, .agg = NULL, .check = "~blC",
   .conflict = NULL, .prefix = NULL)
 }
 \arguments{
@@ -19,13 +19,13 @@ defining the columns to keep from \code{y}}
 will be grouped by its \code{by} columns and \code{fun} will be applied to
 all kept columns from {y}}
 
-\item{.check}{a string, see details about \code{check} parameter in ?safe_joins`}
+\item{.check}{a string, see details about \code{check} parameter in ?safe_joins}
 
 \item{.conflict}{if \code{NULL}, in case of column conflict both columns are
 suffixed as in \emph{dplyr}, if a function of two parameters or a formula,
 a function is applied on both columns. If the string "patch", matched
 values from \code{y} will overwrite existing values in \code{x} while the other
-values will be kept}
+values will be kept`}
 
 \item{.prefix}{prefix of new columns or function/formula to apply on names of new
 columns}

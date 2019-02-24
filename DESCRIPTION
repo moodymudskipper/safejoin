@@ -6,8 +6,8 @@ Authors@R:
            family = "Fabri",
            role = c("aut", "cre"),
            email = "antoine.fabri@gmail.com")
-Description: Wrappers around dplyr functions to join safely using various checks
-License: GPL3
+Description: Wrappers around dplyr functions to join safely using various checks.
+License: GPL-3
 Encoding: UTF-8
 Language: en
 LazyData: true
