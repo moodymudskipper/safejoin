@@ -91,7 +91,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
     get(e_check$fun)(txt)
   }
 
-  # check if all combinations are present on x
+  # check if all combinations are present on y
   f_check <- check_for_letter(check,"f")
   if (f_check$lgl &&
       nrow( absent_comb <- dplyr::setdiff(
@@ -141,9 +141,10 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
   conflict_fun <- NULL
   common_aux <- NULL
   if ((c_check$lgl || !is.null(conflict)) &&
-      length(common_aux <-
-             intersect(setdiff(names(x),by$x), setdiff(names(y),by$y)))) {
-    if (is.null(conflict)){
+      length(common_aux <- union(
+             intersect(names(x), setdiff(names(y),by$y)),
+             intersect(setdiff(names(x), by$x), names(y))))) {
+    if (is.null(conflict)) {
       # if conflict is null trigger appropriate output
       txt <- sprintf("Conflict of auxiliary columns: %s", paste_enum(common_aux))
       get(c_check$fun)(txt)
