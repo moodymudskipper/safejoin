@@ -1,5 +1,5 @@
 context("check")
-
+library(dplyr)
 test_that("character 'b' works", {
   x <- band_instruments
   y <- band_members
@@ -9,7 +9,7 @@ test_that("character 'b' works", {
   txt <- "Joining, by"
   expect_warning(safe_left_join(x, y, check =  "b"), txt)
   expect_message(safe_left_join(x, y, check = "~b"), txt)
-  expect_message(eat(x, y, check = "~b"), txt)
+  expect_message(eat(x, y, .check = "~b"), txt)
 })
 
 test_that("character 'l' works", {
@@ -30,7 +30,7 @@ test_that("character 'l' works", {
   expect_error(  safe_left_join(x, y, check =  "L"), txt)
   expect_warning(safe_left_join(x, y, check =  "l"), txt)
   expect_message(safe_left_join(x, y, check = "~l"), txt)
-  expect_message(eat(x, y, check = "~l"), txt)
+  expect_message(eat(x, y, .check = "~l"), txt)
 })
 
 test_that("character 'u' works", {
@@ -49,7 +49,7 @@ test_that("character 'u' works", {
   expect_error(  safe_left_join(x, y, check =  "U"), txt)
   expect_warning(safe_left_join(x, y, check =  "u"), txt)
   expect_message(safe_left_join(x, y, check = "~u"), txt)
-  expect_message(eat(x, y, check = "~u"), txt)
+  expect_message(eat(x, y, .check = "~u"), txt)
 })
 
 test_that("character 'v' works", {
@@ -68,7 +68,7 @@ test_that("character 'v' works", {
   expect_error(  safe_left_join(x, y, check =  "V"), txt)
   expect_warning(safe_left_join(x, y, check =  "v"), txt)
   expect_message(safe_left_join(x, y, check = "~v"), txt)
-  expect_message(eat(x, y, check = "~v"), txt)
+  expect_message(eat(x, y, .check = "~v"), txt)
 })
 
 test_that("character 'c' works", {
@@ -85,7 +85,7 @@ test_that("character 'c' works", {
   expect_error(  safe_left_join(x, y, check =  "C", by = "name"), txt)
   expect_warning(safe_left_join(x, y, check =  "c", by = "name"), txt)
   expect_message(safe_left_join(x, y, check = "~c", by = "name"), txt)
-  expect_message(eat(x, y, check = "~c", by = "name"), txt)
+  expect_message(eat(x, y, .check = "~c", .by = "name"), txt)
 })
 
 test_that("character 'm' works", {
@@ -102,7 +102,7 @@ test_that("character 'm' works", {
   expect_error(  safe_left_join(x, y, check =  "M"), txt)
   expect_warning(safe_left_join(x, y, check =  "m"), txt)
   expect_message(safe_left_join(x, y, check = "~m"), txt)
-  expect_message(eat(x, y, check = "~m"), txt)
+  expect_message(eat(x, y, .check = "~m"), txt)
 })
 
 
@@ -126,7 +126,7 @@ test_that("character 'e' works", {
   expect_error(  safe_left_join(x, y, check =  "E"), txt)
   expect_warning(safe_left_join(x, y, check =  "e"), txt)
   expect_message(safe_left_join(x, y, check = "~e"), txt)
-  expect_message(eat(x, y, check = "~e"), txt)
+  expect_message(eat(x, y, .check = "~e"), txt)
 })
 
 test_that("character 'f' works", {
@@ -150,20 +150,20 @@ test_that("character 'f' works", {
   expect_error(  safe_left_join(x, y, check =  "F"), txt)
   expect_warning(safe_left_join(x, y, check =  "f"), txt)
   expect_message(safe_left_join(x, y, check = "~f"), txt)
-  expect_message(eat(x, y, check = "~f"), txt)
+  expect_message(eat(x, y, .check = "~f"), txt)
 })
 
 test_that("character 'd' works", {
   # x has all combinations
   x <- band_instruments
   y <- band_members
-  expect_silent(eat(x, y, band, check =  "D"))
-  expect_silent(eat(x, y, band, check =  "d"))
-  expect_silent(eat(x, y, band, check = "~d"))
+  expect_silent(eat(x, y, band, .check =  "D"))
+  expect_silent(eat(x, y, band, .check =  "d"))
+  expect_silent(eat(x, y, band, .check = "~d"))
 
   txt <- "columns must be given explicitly"
-  expect_error(  eat(x, y, check =  "D"), txt)
+  expect_error(  eat(x, y, .check =  "D"), txt)
   txt <- "not provided"
-  expect_warning(eat(x, y, check =  "d"), txt)
-  expect_message(eat(x, y, check = "~d"), txt)
+  expect_warning(eat(x, y, .check =  "d"), txt)
+  expect_message(eat(x, y, .check = "~d"), txt)
 })
