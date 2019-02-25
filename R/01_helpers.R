@@ -51,7 +51,7 @@ with_friendly_dot_error <- function(fun){
     MC <- match.call()
     MC[[1]] <- quote(fun)
     res <- try(eval.parent(MC),silent = TRUE)
-    if(inherits(res,"try-error")){
+    if (inherits(res,"try-error")) {
       frmls <- setdiff(names(formals()),"...")
       dot_names <- names(eval(substitute(alist(...))))
       candidates <- intersect(paste0(".",dot_names), frmls)
