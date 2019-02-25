@@ -60,7 +60,7 @@ safe_right_join <- function(x, y, by = NULL, copy = FALSE,
                            check = "~blC", conflict = NULL) {
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::right_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix = c(".x", ".y"), ...)
+                   suffix, ...)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -75,7 +75,7 @@ safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
 
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::inner_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix = c(".x", ".y"), ...)
+                   suffix, ...)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -90,7 +90,7 @@ safe_full_join <- function(x, y, by = NULL, copy = FALSE,
 
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::full_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix = c(".x", ".y"), ...)
+                   suffix, ...)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
