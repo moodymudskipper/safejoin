@@ -196,9 +196,9 @@ resolve_conflicts <- function(
   } else if (apply_conflict_fun) {
     for (aux in common_aux) {
       res[[aux]] <- conflict_fun(res[[aux]], res[[paste0("*",aux,"_conflicted*")]])
-      temp_cols <-  paste0("*",common_aux,"_conflicted*")
     }
-    res <- dplyr::mutate_at(res,temp_cols, ~NULL)
+    temp_cols <-  paste0("*",common_aux,"_conflicted*")
+    res[temp_cols] <- NULL
   }
   res
 }
