@@ -67,7 +67,8 @@ The additional function, `eat`
 is designed to be an improved left join in the cases where one is growing a 
 data frame. In addition to the features above :
 
-* It leverages the select helpers from *dplyr* to select columns from `y`
+* It uses the `...` argument to select columns from `y` and leverages the select helpers from *dplyr*, allowing also things like renaming on the fly, negative selection, 
+  quasi-quotation...
 * It features a sophisticated system to deal with column conflicts
 * It can prefix new columns or rename them in a flexible way
 * It can summarize `y` on the fly along joining columns for more concise and
