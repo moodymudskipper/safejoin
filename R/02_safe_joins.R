@@ -44,10 +44,10 @@ NULL
 #' @export
 #' @rdname safe_joins
 safe_left_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), ...,
+                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
                            check = "~blC", conflict = NULL){
   l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::left_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, suffix, ...)
+  res <- dplyr::left_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, suffix, na_matches = na_matches)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -56,11 +56,11 @@ safe_left_join <- function(x, y, by = NULL, copy = FALSE,
 #' @export
 #' @rdname safe_joins
 safe_right_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), ...,
+                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
                            check = "~blC", conflict = NULL) {
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::right_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix, ...)
+                   suffix, na_matches = na_matches)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -69,13 +69,13 @@ safe_right_join <- function(x, y, by = NULL, copy = FALSE,
 #' @export
 #' @rdname safe_joins
 safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), ...,
+                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
                            check = "~blC", conflict = NULL
 ) {
 
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::inner_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix, ...)
+                   suffix, na_matches = na_matches)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -84,13 +84,13 @@ safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
 #' @export
 #' @rdname safe_joins
 safe_full_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), ...,
+                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
                            check = "~blC", conflict = NULL
 ) {
 
   l <- safe_check(x, y, by, check, conflict)
   res <- dplyr::full_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix, ...)
+                   suffix, na_matches = na_matches)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -98,12 +98,12 @@ safe_full_join <- function(x, y, by = NULL, copy = FALSE,
 
 #' @export
 #' @rdname safe_joins
-safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
+safe_semi_join <- function(x, y, by = NULL, copy = FALSE, na_matches = pkgconfig::get_config("dplyr::na_matches"),
                            check = "~blC", conflict = NULL
 ) {
 
   l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::semi_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, ...)
+  res <- dplyr::semi_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, na_matches = na_matches)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -111,10 +111,10 @@ safe_semi_join <- function(x, y, by = NULL, copy = FALSE, ...,
 
 #' @export
 #' @rdname safe_joins
-safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
+safe_anti_join <- function(x, y, by = NULL, copy = FALSE, na_matches = pkgconfig::get_config("dplyr::na_matches"),
                            check = "~blC", conflict = NULL) {
   l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::anti_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, ...)
+  res <- dplyr::anti_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, na_matches = na_matches)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
@@ -123,9 +123,9 @@ safe_anti_join <- function(x, y, by = NULL, copy = FALSE, ...,
 #' @export
 #' @rdname safe_joins
 safe_nest_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE,
-                           name = NULL, ..., check = "~blC", conflict = NULL){
+                           name = NULL, na_matches = pkgconfig::get_config("dplyr::na_matches"), check = "~blC", conflict = NULL){
   l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::nest_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, keep, name, ...)
+  res <- dplyr::nest_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, keep, name)
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
