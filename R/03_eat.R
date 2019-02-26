@@ -32,12 +32,13 @@ eat <- function(.x, .y, ..., .by = NULL, .agg = NULL,
                 .prefix = NULL) {
 
   l <- safe_check(.x, .y, .by, .check, .conflict,
-                  in_eat = TRUE, .agg, .prefix, ...)
+                  in_eat = TRUE, .agg, .prefix, eval(substitute(alist(...))))
   res <- dplyr::left_join(l$x,l$y, by = `names<-`(l$by$y,l$by$x))
   res <- resolve_conflicts(
     res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
   res
 }
 
-
+# debugonce(eat)
+# debugonce(safe_check)
 

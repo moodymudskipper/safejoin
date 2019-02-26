@@ -1,4 +1,4 @@
-safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, ...){
+safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, dots){
   #browser()
   # guess by and act depending on "b" check
   b_check <- check_for_letter(check,"b")
@@ -14,13 +14,11 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
   if (any(mismatch_lgl)) {
     txt <- ""
     for (i in which(mismatch_lgl)) {
-      lev_x <- levels(x[[by$x[i]]])
-      lev_y <- levels(y[[by$y[i]]])
       txt <- paste0(txt, sprintf(
-        "The pair %s/%s don't have the same levels:\nnot in x: %s\nnot in y: %s\n",
+        "The pair %s/%s don't have the same levels:\nx: %s\ny: %s\n",
         by$x[i], by$y[i],
-        paste( setdiff(lev_y, lev_x), collapse = " "),
-        paste( setdiff(lev_x, lev_y), collapse = " ")))
+        paste(levels(x[[by$x[i]]]), collapse = ", "),
+        paste(levels(y[[by$y[i]]]), collapse = ", ")))
     }
 
     x[[by$x[i]]] <- as.character(x[[by$x[i]]])
@@ -78,7 +76,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
   if (in_eat) {
     # check dots
     d_check <- check_for_letter(check,"d")
-    if (d_check$lgl && length(substitute(list(...))) == 1) {
+    if (d_check$lgl && length(dots) == 0) {
       if (d_check$fun == "abort") {
         rlang::abort("Eaten columns must be given explicitly")
       }
@@ -92,7 +90,7 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
     by_y_syms <- rlang::syms(by$y)
 
     # subset y by column
-    if (rlang::dots_n(...)) y <- dplyr::select(y, ..., !!!by_y_syms)
+    if (length(dots)) y <- dplyr::select(y, !!!dots, !!!by_y_syms)
 
     # prefix y cols if relevant
     if (!is.null(prefix)) {
@@ -147,3 +145,6 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, .
   }
   dplyr::lst(x, y, by, patch, apply_conflict_fun, conflict_fun, common_aux)
 }
+
+
+safe_check_dot_friendly <- with_friendly_dot_error(safe_check)
