@@ -8,6 +8,26 @@ safe_check <- function(x, y, by, check, conflict, in_eat = FALSE, agg, prefix, d
   if (length(by$messages)) get(b_check$fun)(by$messages)
   by <- by$result
 
+  # check if types and classes are the same on both sides
+  t_check <- check_for_letter(check,"t")
+  if (t_check$lgl) {
+    mismatch_lgl <- mapply(function(x,y) !identical(
+      list(typeof(x), class(x)), list(typeof(y), class(y))), x[by$x], y[by$y])
+    if (any(mismatch_lgl)) {
+      txt <- ""
+      for (i in which(mismatch_lgl)) {
+        txt <- paste0(txt, sprintf(
+          "The pair %s/%s don't have the same type/class:\nx: %s / %s\ny: %s / %s",
+          by$x[i], by$y[i],
+          typeof(x[[by$x[i]]]),
+          paste(class(x[[by$x[i]]]), collapse = ", "),
+          typeof(y[[by$y[i]]]),
+          paste(class(y[[by$y[i]]]), collapse = ", ")))
+      }
+      get(t_check$fun)(txt)
+    }
+  }
+
   # check if levels are the same on both sides
   l_check <- check_for_letter(check,"l")
   mismatch_lgl <- mapply(function(x,y) !identical(levels(x), levels(y)), x[by$x], y[by$y])
