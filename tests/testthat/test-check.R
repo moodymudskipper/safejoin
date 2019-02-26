@@ -160,6 +160,7 @@ test_that("character 'd' works", {
   expect_silent(eat(x, y, band, .check =  "D"))
   expect_silent(eat(x, y, band, .check =  "d"))
   expect_silent(eat(x, y, band, .check = "~d"))
+  expect_silent(eat(x, y, -band, .check = "~d"))
 
   txt <- "columns must be given explicitly"
   expect_error(  eat(x, y, .check =  "D"), txt)

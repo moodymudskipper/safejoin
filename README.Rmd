@@ -69,7 +69,6 @@ data frame. In addition to the features above :
 
 * It uses the `...` argument to select columns from `y` and leverages the select helpers from *dplyr*, allowing also things like renaming on the fly, negative selection, 
   quasi-quotation...
-* It features a sophisticated system to deal with column conflicts
 * It can prefix new columns or rename them in a flexible way
 * It can summarize `y` on the fly along joining columns for more concise and
 readable code
@@ -175,8 +174,8 @@ Check if `y` is unique on joining columns (it is):
 ```{r}
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~v")
+               by = c("name","cooks"),
+               check = "~v")
 ```
 
 Check if levels are compatible betweeb joining columns:
@@ -184,8 +183,8 @@ Check if levels are compatible betweeb joining columns:
 ```{r}
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~l")
+               by = c("name","cooks"),
+               check = "~l")
 ```
 
 In case of confict choose either the column from `x` or from `y`:
@@ -208,35 +207,32 @@ Some common use cases for numerics would be ``confict = `+` ``, `confict = pmin`
 
 ## eat
 
-All the checks above are still relevant for `eat`. Let's go through the
-additional features.
+All the checks above are still relevant for `eat`, we'll silence them below to
+focus on the additional features.
 
 Same as `safe_left_join` :
 
 ```{r eat1}
 band_members_extended %>% eat(band_instruments_extended)
-band_members_extended %>% eat(band_instruments_extended, .by="name", .check ="")
+band_members_extended %>% eat(band_instruments_extended, .by="name", .check = "")
 ```
 
 The names of `eat`'s parameters start with a dot to minimize the risk of conflict
-when naming the arguments fed to the `...`, as in second example below.
+when naming the arguments fed to the `...`. The `...` are usually used to pass
+columns to be eaten, but they are passed to `select` so more features are
+available.
 
 Rename eaten columns :
 
 ```{r}
-band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW")
-band_members_extended %>% eat(band_instruments_extended, PLAYS = plays)
+band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW", check = "")
+band_members_extended %>% eat(band_instruments_extended, plays, .by="name", check = "")
+band_members_extended %>% eat(band_instruments_extended, -cooks, .by="name", check = "")
+band_members_extended %>% eat(band_instruments_extended, PLAYS = plays, check = "")
+band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name", check ="")
 ```
 
-Eat `plays` column only:
-
-```{r}
-band_members_extended %>% eat(band_instruments_extended, plays, .by="name")
-band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name")
-```
-
-Here we used the `...` argument, `eat` can check if the dot argument was used by
-using the character `"d"` in the check string:
+We can check if the dot argument was used by using the character `"d"` in the check string:
 
 ```{r}
 band_members_extended %>% eat(band_instruments_extended, .check ="~d")
