@@ -242,8 +242,8 @@ In cases of matching to many (i.e. the join columns don't form a unique key for
 `y`), we can use the parameter `.agg` to aggregate them on the fly:
 
 ```{r}
-band_instruments_extended %>% eat(band_members_extended)
-band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"))
+band_instruments_extended %>% eat(band_members_extended, check = "")
+band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"), check = "")
 ```
 
 Finally, `conflict = "patch"` is a special value where matches found in `y`
@@ -252,5 +252,5 @@ overwrite the values in `x`, and other values are kept. It's different from
 by `NA`.
 
 ```{r}
-band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch")
+band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch", check = "")
 ```
