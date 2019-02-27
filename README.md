@@ -44,7 +44,6 @@ The package features functions `safe_left_join`, `safe_right_join`, `safe_inner_
 The additional function, `eat` is designed to be an improved left join in the cases where one is growing a data frame. In addition to the features above :
 
 -   It uses the `...` argument to select columns from `y` and leverages the select helpers from *dplyr*, allowing also things like renaming on the fly, negative selection, quasi-quotation...
--   It features a sophisticated system to deal with column conflicts
 -   It can prefix new columns or rename them in a flexible way
 -   It can summarize `y` on the fly along joining columns for more concise and readable code
 
@@ -259,8 +258,8 @@ Check if `y` is unique on joining columns (it is):
 ``` r
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~v")
+               by = c("name","cooks"),
+               check = "~v")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <chr>     <chr> 
@@ -275,8 +274,8 @@ Check if levels are compatible betweeb joining columns:
 ``` r
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~l")
+               by = c("name","cooks"),
+               check = "~l")
 #> The pair cooks/cooks don't have the same levels:
 #> not in x: 
 #> not in y: spaghetti
@@ -344,7 +343,7 @@ Some common use cases for numerics would be `` confict = `+` ``, `confict = pmin
 eat
 ---
 
-All the checks above are still relevant for `eat`. Let's go through the additional features.
+All the checks above are still relevant for `eat`, we'll silence them below to focus on the additional features.
 
 Same as `safe_left_join` :
 
@@ -361,7 +360,7 @@ band_members_extended %>% eat(band_instruments_extended)
 #> 2 John  Beatles pizza     guitar
 #> 3 Paul  Beatles spaghetti <NA>  
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, .by="name", .check ="")
+band_members_extended %>% eat(band_instruments_extended, .by="name", .check = "")
 #> # A tibble: 4 x 5
 #>   name  band    cooks.x   plays  cooks.y
 #>   <chr> <chr>   <fct>     <chr>  <fct>  
@@ -371,16 +370,12 @@ band_members_extended %>% eat(band_instruments_extended, .by="name", .check ="")
 #> 4 John  The Who pizza     guitar pizza
 ```
 
-The names of `eat`'s parameters start with a dot to minimize the risk of conflict when naming the arguments fed to the `...`, as in second example below.
+The names of `eat`'s parameters start with a dot to minimize the risk of conflict when naming the arguments fed to the `...`. The `...` are usually used to pass columns to be eaten, but they are passed to `select` so more features are available.
 
 Rename eaten columns :
 
 ``` r
-band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW")
-#> Joining, by = c("name", "cooks")
-#> Warning: The pair cooks/cooks don't have the same levels:
-#> not in x: 
-#> not in y: spaghetti
+band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     NEW_plays
 #>   <chr> <chr>   <chr>     <chr>    
@@ -388,11 +383,23 @@ band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW")
 #> 2 John  Beatles pizza     guitar   
 #> 3 Paul  Beatles spaghetti <NA>     
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, PLAYS = plays)
-#> Joining, by = c("name", "cooks")
-#> Warning: The pair cooks/cooks don't have the same levels:
-#> not in x: 
-#> not in y: spaghetti
+band_members_extended %>% eat(band_instruments_extended, plays, .by="name", .check = "")
+#> # A tibble: 4 x 4
+#>   name  band    cooks     plays 
+#>   <chr> <chr>   <fct>     <chr> 
+#> 1 Mick  Stones  pasta     <NA>  
+#> 2 John  Beatles pizza     guitar
+#> 3 Paul  Beatles spaghetti bass  
+#> 4 John  The Who pizza     guitar
+band_members_extended %>% eat(band_instruments_extended, -cooks, .by="name", .check = "")
+#> # A tibble: 4 x 3
+#>   name  band    cooks    
+#>   <chr> <chr>   <fct>    
+#> 1 Mick  Stones  pasta    
+#> 2 John  Beatles pizza    
+#> 3 Paul  Beatles spaghetti
+#> 4 John  The Who pizza
+band_members_extended %>% eat(band_instruments_extended, PLAYS = plays, .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     PLAYS 
 #>   <chr> <chr>   <chr>     <chr> 
@@ -400,20 +407,7 @@ band_members_extended %>% eat(band_instruments_extended, PLAYS = plays)
 #> 2 John  Beatles pizza     guitar
 #> 3 Paul  Beatles spaghetti <NA>  
 #> 4 John  The Who pizza     guitar
-```
-
-Eat `plays` column only:
-
-``` r
-band_members_extended %>% eat(band_instruments_extended, plays, .by="name")
-#> # A tibble: 4 x 4
-#>   name  band    cooks     plays 
-#>   <chr> <chr>   <fct>     <chr> 
-#> 1 Mick  Stones  pasta     <NA>  
-#> 2 John  Beatles pizza     guitar
-#> 3 Paul  Beatles spaghetti bass  
-#> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name")
+band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name", .check ="")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -423,7 +417,7 @@ band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="
 #> 4 John  The Who pizza     guitar
 ```
 
-Here we used the `...` argument, `eat` can check if the dot argument was used by using the character `"d"` in the check string:
+We can check if the dot argument was used by using the character `"d"` in the check string:
 
 ``` r
 band_members_extended %>% eat(band_instruments_extended, .check ="~d")
@@ -441,11 +435,7 @@ band_members_extended %>% eat(band_instruments_extended, .check ="~d")
 In cases of matching to many (i.e. the join columns don't form a unique key for `y`), we can use the parameter `.agg` to aggregate them on the fly:
 
 ``` r
-band_instruments_extended %>% eat(band_members_extended)
-#> Joining, by = c("name", "cooks")
-#> Warning: The pair cooks/cooks don't have the same levels:
-#> not in x: spaghetti
-#> not in y:
+band_instruments_extended %>% eat(band_members_extended, .check = "")
 #> # A tibble: 4 x 4
 #>   name  plays  cooks band   
 #>   <chr> <chr>  <chr> <chr>  
@@ -453,11 +443,7 @@ band_instruments_extended %>% eat(band_members_extended)
 #> 2 John  guitar pizza The Who
 #> 3 Paul  bass   pasta <NA>   
 #> 4 Keith guitar pizza <NA>
-band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"))
-#> Joining, by = c("name", "cooks")
-#> Warning: The pair cooks/cooks don't have the same levels:
-#> not in x: spaghetti
-#> not in y:
+band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"), .check = "")
 #> # A tibble: 3 x 4
 #>   name  plays  cooks band           
 #>   <chr> <chr>  <chr> <chr>          
@@ -469,7 +455,7 @@ band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collaps
 Finally, `conflict = "patch"` is a special value where matches found in `y` overwrite the values in `x`, and other values are kept. It's different from `conflict = ~coalesce(.y,.x)` because some values in `x` might be overwritten by `NA`.
 
 ``` r
-band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch")
+band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks plays 
 #>   <chr> <chr>   <fct> <chr> 

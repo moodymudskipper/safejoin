@@ -225,11 +225,11 @@ available.
 Rename eaten columns :
 
 ```{r}
-band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW", check = "")
-band_members_extended %>% eat(band_instruments_extended, plays, .by="name", check = "")
-band_members_extended %>% eat(band_instruments_extended, -cooks, .by="name", check = "")
-band_members_extended %>% eat(band_instruments_extended, PLAYS = plays, check = "")
-band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name", check ="")
+band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW", .check = "")
+band_members_extended %>% eat(band_instruments_extended, plays, .by="name", .check = "")
+band_members_extended %>% eat(band_instruments_extended, -cooks, .by="name", .check = "")
+band_members_extended %>% eat(band_instruments_extended, PLAYS = plays, .check = "")
+band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name", .check ="")
 ```
 
 We can check if the dot argument was used by using the character `"d"` in the check string:
@@ -242,8 +242,8 @@ In cases of matching to many (i.e. the join columns don't form a unique key for
 `y`), we can use the parameter `.agg` to aggregate them on the fly:
 
 ```{r}
-band_instruments_extended %>% eat(band_members_extended, check = "")
-band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"), check = "")
+band_instruments_extended %>% eat(band_members_extended, .check = "")
+band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"), .check = "")
 ```
 
 Finally, `conflict = "patch"` is a special value where matches found in `y`
@@ -252,5 +252,5 @@ overwrite the values in `x`, and other values are kept. It's different from
 by `NA`.
 
 ```{r}
-band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch", check = "")
+band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch", .check = "")
 ```
