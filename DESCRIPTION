@@ -1,6 +1,6 @@
 Package: safejoin
 Title: Wrappers around `dplyr` and `fuzzyjoin`s functions to join safely using various checks.
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R:
     person(given = "Antoine",
            family = "Fabri",
