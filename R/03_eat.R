@@ -1,6 +1,6 @@
 #' Eat columns from another data frame
 #'
-#' Modified left_join where only a specified subset of \code{y} is kept, with
+#' Modified join where only a specified subset of \code{y} is kept, with
 #'   optional checks and transformations.
 #'
 #' Character codes are the same as for `safe_*_join` functions, with the
@@ -11,13 +11,16 @@
 #' @param .x,.y	tbls to join
 #' @param ... One or more unquoted expressions, passed to \code{dplyr::select},
 #'   defining the columns to keep from \code{y}
-#' @param .by a character vector of variables to join by.
+#' @param .by a character vector of variables to join by, or a formula defining
+#'   a joining condition using functions a notation such as
+#'   `~ X("var1") > Y("var2") & X("var3") < Y("var4")`
 #' @param .na_matches	 Use `"never"` to always treat two `NA` or `NaN` values as
 #'   different, like joins for database sources, similarly to
-#'   `merge(incomparables = FALSE)`. The default, `"na"`, always treats two `NA`
-#'    or `NaN` values as equal, like `merge()`. Users and package authors can
-#'    change the default behavior by calling
-#'    `pkgconfig::set_config("dplyr::na_matches" = "never")`.
+#' @param .match_fun	 passed to `fuzzyjoin::fuzzy_join`. Vectorized function
+#'   given two columns, returning `TRUE` or `FALSE` as to whether they are a
+#'   match. Can be a list of functions one for each pair of columns specified in
+#'   by (if a named list, it uses the names in x). If only one function is given
+#'    it is used on all column pairs.
 #' @param .agg function or formula or \code{NULL}, if not \code{NULL}, \code{y}
 #'   will be grouped by its \code{by} columns and \code{fun} will be applied to
 #'   all kept columns from {y}
@@ -30,7 +33,7 @@
 #'   values will be kept`
 #' @param .prefix prefix of new columns or function/formula to apply on names of new
 #'   columns
-#' @param .join type of join o build on, a left join by default
+#' @param .mode type of join on build on, a left join by default
 #' @return a data frame
 #' @export
 eat <- function(.x, .y, ..., .by = NULL,
@@ -49,7 +52,7 @@ eat <- function(.x, .y, ..., .by = NULL,
   # HANDLE .y IF IT'S A LIST #
   ############################
 
-  if (is.list(.y) && !is.data.frame(.y)){
+  if (is.list(.y) && !is.data.frame(.y)) {
     dots <- enquos(...)
     res <- purrr::reduce2(
       .y, rlang::names2(.y), .init = .x,

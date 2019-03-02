@@ -22,6 +22,9 @@
 #'     join columns are present in `x`}
 #'   \item{f}{the letter after **e**, check that all combinations of values of
 #'     join columns are present in `y`}
+#'   \item{l}{as in **l**evels, check that join columns are consistent in term of
+#'     factor levels}
+#'   \item{t}{as in  **t**ype, check that joining columns have same class and type}
 #' }
 #'
 #' An upper case letter will trigger `abort`, a lower case letter will trigger
@@ -36,7 +39,7 @@
 #'   a function is applied on both columns. If the string "patch", matched
 #'   values from `y` will overwrite existing values in `x` while the other
 #'   values will be kept
-#'
+#' @param mode type of join on build on, a left join by default
 #'
 #' @name safe_joins
 NULL
