@@ -35,23 +35,90 @@
 #' @export
 eat <- function(.x, .y, ..., .by = NULL,
                 .na_matches = pkgconfig::get_config("dplyr::na_matches"),
+                .match_fun = NULL,
                 .agg = NULL,
                 .check = "~blC",
                 .conflict = NULL,
                 .prefix = NULL,
-                .join = c("left_join","right_join","inner_join","full_join")) {
+                .mode = c("left","right","inner","full")) {
 
-  .join <- match.arg(.join)
-  join_fun <- getFromNamespace(.join, "dplyr")
-  l <- safe_check(.x, .y, .by, .check, .conflict,
-                  in_eat = TRUE, .agg, .prefix, eval(substitute(alist(...))))
-  res <- join_fun(l$x,l$y, by = `names<-`(l$by$y,l$by$x),
-                          na_matches = .na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
+  .mode <- match.arg(.mode)
+
+  ##############################
+  # HANDLE FORMULA INPUT OF BY #
+  ##############################
+  multi_by <- NULL
+  if (inherits(.by, "formula")) {
+    multi_by <- lapply(extract_xy_content(.by), unique)
+    multi_by$x <- purrr::map_chr(
+      multi_by$x, ~if(is.numeric(.)) ..2[.] else ., names(.x))
+    multi_by$y <- purrr::map_chr(
+      multi_by$y, ~if(is.numeric(.)) ..2[.] else ., names(.y))
+    if (!is.null(.match_fun))
+      rlang::abort("Don't provide .match_fun if you specify by as a formula")
+    .match_fun <- .by
+    .by <- multi_by
+  }
+
+  ###############
+  # MAIN CHECKS #
+  ###############
+  L <- safe_check(x = .x, y = .y, by = .by, match_fun = .match_fun,
+                  check = .check, conflict = .conflict, in_eat = TRUE,
+                  suffix = c(".x",".y"),
+                  agg = .agg, prefix = .prefix, dots = eval(substitute(alist(...))))
+  with(L,{
+    if (!is.null(.match_fun)) {
+      ###############
+      # FUZZY JOINS #
+      ###############
+      if (is.null(multi_by)) {
+        # standard fuzzy join
+        res <- fuzzyjoin:::fuzzy_join(
+          x, y, by = `names<-`(by$y,by$x),
+          match_fun = rlang::as_function(.match_fun),
+          mode = .mode)
+      } else {
+        # using multi_by or safejoin formula notation
+        res <- fuzzyjoin::fuzzy_join(
+          x, y,
+          multi_by = multi_by,
+          multi_match_fun = rlang::as_function(.match_fun),
+          mode = .mode)
+        check_fuzzy_conflicts(res, .check, x, y)
+      }
+    } else {
+      ##################
+      # STANDARD JOINS #
+      ##################
+      join <- getFromNamespace(paste0(.mode,"_join"), "dplyr")
+      res <- join(
+        x, y, by = `names<-`(by$y,by$x), na_matches = .na_matches)
+    }
+    #####################
+    # RESOLVE CONFLICTS #
+    #####################
+    res <- resolve_conflicts(
+      res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
+    res
+  })
 }
 
-# debugonce(eat)
-# debugonce(safe_check)
 
+eat.list <- function(.x, .y, ..., .by = NULL,
+                     .na_matches = pkgconfig::get_config("dplyr::na_matches"),
+                     .agg = NULL,
+                     .check = "~blC",
+                     .conflict = NULL,
+                     .prefix = NULL,
+                     .mode = c("left","right","inner","full")){
+  Reduce(function(x,y) eat(x,y, ..., .by = .by, .agg = .agg, .check = .check,
+                           .conflict = .conflict, .prefix = .prefix,
+                           .join = .join),.y, .x)
+}
+#
+# debugonce(eat)
+# eat.list(band_instruments,list(band_members, band_members),.by="name", .prefix = "Z")
+# # debugonce(eat)
+# # debugonce(safe_check)
+#

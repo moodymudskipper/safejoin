@@ -41,92 +41,136 @@
 #' @name safe_joins
 NULL
 
-#' @export
-#' @rdname safe_joins
-safe_left_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-                           check = "~blC", conflict = NULL){
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::left_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, suffix, na_matches = na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
+library(rlang)
+safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
+                      suffix = c(".x", ".y"),
+                      na_matches = pkgconfig::get_config("dplyr::na_matches"),
+                      match_fun = NULL,
+                      check = "~blC", conflict = NULL,
+                      mode = c("left","right","inner","full","semi","anti","nest")){
+  mode <- match.arg(mode)
+  join <- getFromNamespace(paste0(mode,"_join"), "dplyr")
+
+  ##############################
+  # HANDLE FORMULA INPUT OF BY #
+  ##############################
+  multi_by <- NULL
+  if (inherits(by, "formula")) {
+    multi_by <- lapply(extract_xy_content(by), unique)
+    multi_by$x <- purrr::map_chr(multi_by$x, ~if(is.numeric(.)) names(x)[.] else .)
+    multi_by$y <- purrr::map_chr(multi_by$y, ~if(is.numeric(.)) names(y)[.] else .)
+    if (!is.null(match_fun))
+      rlang::abort("Don't provide match_fun if you specify by as a formula")
+    match_fun <- by
+    by <- multi_by
+  }
+  ###############
+  # MAIN CHECKS #
+  ###############
+  L <- safe_check(x = x, y = y, by = by, check = check, conflict = conflict,
+                  suffix = suffix, match_fun = match_fun, agg = NULL, prefix = NULL, dots = NULL)
+  with(L, {
+    if (!is.null(match_fun)) {
+      ###############
+      # FUZZY JOINS #
+      ###############
+      if (is.null(multi_by)) {
+        # standard fuzzy join
+        res <- fuzzyjoin:::fuzzy_join(
+          x, y, by = `names<-`(by$y,by$x),
+          match_fun = rlang::as_function(match_fun),
+          mode = mode)
+      } else {
+        # using multi_by or safejoin formula notation
+        res <- fuzzyjoin::fuzzy_join(
+          x, y,
+          multi_by = multi_by,
+          multi_match_fun = rlang::as_function(match_fun),
+          mode = mode)
+        check_fuzzy_conflicts(res, check, x , y)
+      }
+    } else if (mode %in% c("left","right","inner","full")) {
+      ##################
+      # STANDARD JOINS #
+      ##################
+      res <- join(
+        x, y, by = `names<-`(by$y,by$x), copy, suffix, na_matches = na_matches)
+    } else if (mode %in% c("semi","anti")) {
+      ###################
+      # SEMI/ANTI JOINS #
+      ###################
+      res <- join(
+        x, y, by = `names<-`(by$y,by$x), copy, na_matches = na_matches)
+    } else if (mode == "nest") {
+      #############
+      # NEST JOIN #
+      #############
+      res <- join(
+        x, y, by = `names<-`(by$y,by$x), copy, keep, name)
+    }
+
+    #####################
+    # RESOLVE CONFLICTS #
+    #####################
+    res <- resolve_conflicts(
+      res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
+    res
+  })
 }
 
-#' @export
-#' @rdname safe_joins
-safe_right_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-                           check = "~blC", conflict = NULL) {
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::right_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix, na_matches = na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
-}
+
+frmls <- formals(safe_join)
+frmls$mode <- NULL
+frmls$keep <- NULL
+frmls$name <- NULL
 
 #' @export
 #' @rdname safe_joins
-safe_inner_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-                           check = "~blC", conflict = NULL
-) {
-
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::inner_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix, na_matches = na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
-}
+safe_left_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "left")))
 
 #' @export
 #' @rdname safe_joins
-safe_full_join <- function(x, y, by = NULL, copy = FALSE,
-                           suffix = c(".x", ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-                           check = "~blC", conflict = NULL
-) {
-
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::full_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy,
-                   suffix, na_matches = na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
-}
+safe_right_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "right")))
 
 #' @export
 #' @rdname safe_joins
-safe_semi_join <- function(x, y, by = NULL, copy = FALSE, na_matches = pkgconfig::get_config("dplyr::na_matches"),
-                           check = "~blC", conflict = NULL
-) {
-
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::semi_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, na_matches = na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
-}
+safe_inner_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "inner")))
 
 #' @export
 #' @rdname safe_joins
-safe_anti_join <- function(x, y, by = NULL, copy = FALSE, na_matches = pkgconfig::get_config("dplyr::na_matches"),
-                           check = "~blC", conflict = NULL) {
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::anti_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, na_matches = na_matches)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
-}
+safe_full_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "full")))
+
+##################
+# SEMI AND ANTI  #
+##################
+
+frmls$suffix <- NULL
+#' @export
+#' @rdname safe_joins
+safe_semi_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "semi")))
 
 #' @export
 #' @rdname safe_joins
-safe_nest_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE,
-                           name = NULL, na_matches = pkgconfig::get_config("dplyr::na_matches"), check = "~blC", conflict = NULL){
-  l <- safe_check(x, y, by, check, conflict)
-  res <- dplyr::nest_join(l$x, l$y, by = `names<-`(l$by$y,l$by$x), copy, keep, name)
-  res <- resolve_conflicts(
-    res, l$patch, l$apply_conflict_fun, l$conflict_fun, l$common_aux)
-  res
-}
+safe_anti_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "anti")))
+
+################
+#     NEST     #
+################
+
+frmls <- formals(safe_join)
+frmls$mode <- NULL
+frmls$suffix <- NULL
+frmls$na_matches <- NULL
+
+#' @export
+#' @rdname safe_joins
+safe_nest_join <- rlang::new_function(
+  frmls, expr(safe_join(!!!rlang::set_names(syms(names(frmls))), mode = "nest")))
+
+rm(frmls)
