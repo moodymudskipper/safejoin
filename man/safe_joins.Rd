@@ -13,31 +13,30 @@
 \usage{
 safe_left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
   na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  match_fun = NULL, check = "~blC", conflict = NULL)
 
 safe_right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
   ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  match_fun = NULL, check = "~blC", conflict = NULL)
 
 safe_inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
   ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  match_fun = NULL, check = "~blC", conflict = NULL)
 
 safe_full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
   na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  match_fun = NULL, check = "~blC", conflict = NULL)
 
 safe_semi_join(x, y, by = NULL, copy = FALSE,
   na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  match_fun = NULL, check = "~blC", conflict = NULL)
 
 safe_anti_join(x, y, by = NULL, copy = FALSE,
   na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  match_fun = NULL, check = "~blC", conflict = NULL)
 
 safe_nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE,
-  name = NULL, na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  check = "~blC", conflict = NULL)
+  name = NULL, match_fun = NULL, check = "~blC", conflict = NULL)
 }
 \arguments{
 \item{x, y}{tbls to join}
@@ -61,6 +60,12 @@ it is a potentially expensive operation so you must opt into it.}
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
 
+\item{match_fun}{passed to \code{fuzzyjoin::fuzzy_join}. Vectorized function
+given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
+match. Can be a list of functions one for each pair of columns specified in
+by (if a named list, it uses the names in x). If only one function is given
+it is used on all column pairs.}
+
 \item{check}{a string, see details}
 
 \item{conflict}{if \code{NULL}, in case of column conflict both columns are
@@ -72,6 +77,8 @@ values will be kept}
 \item{keep}{If \code{TRUE} the by columns are kept in the nesting joins.}
 
 \item{name}{the name of the list column nesting joins create. If \code{NULL} the name of \code{y} is used.}
+
+\item{mode}{type of join on build on, a left join by default}
 }
 \description{
 Wrappers around \emph{dplyr}'s joining function that allow to check a variety of
@@ -97,6 +104,9 @@ is duplicated in \code{y}}
 join columns are present in \code{x}}
 \item{f}{the letter after \strong{e}, check that all combinations of values of
 join columns are present in \code{y}}
+\item{l}{as in \strong{l}evels, check that join columns are consistent in term of
+factor levels}
+\item{t}{as in  \strong{t}ype, check that joining columns have same class and type}
 }
 
 An upper case letter will trigger \code{abort}, a lower case letter will trigger

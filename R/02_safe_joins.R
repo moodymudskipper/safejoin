@@ -34,6 +34,11 @@
 #' @inheritParams dplyr::join
 #' @param x,y	tbls to join
 #' @param check a string, see details
+#' @param match_fun	 passed to `fuzzyjoin::fuzzy_join`. Vectorized function
+#'   given two columns, returning `TRUE` or `FALSE` as to whether they are a
+#'   match. Can be a list of functions one for each pair of columns specified in
+#'   by (if a named list, it uses the names in x). If only one function is given
+#'    it is used on all column pairs.
 #' @param conflict if `NULL`, in case of column conflict both columns are
 #'   suffixed as in *dplyr*, if a function of two parameters or a formula,
 #'   a function is applied on both columns. If the string "patch", matched

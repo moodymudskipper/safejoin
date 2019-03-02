@@ -6,8 +6,9 @@
 \usage{
 eat(.x, .y, ..., .by = NULL,
   .na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  .agg = NULL, .check = "~blC", .conflict = NULL, .prefix = NULL,
-  .mode = c("left", "right", "inner", "full"))
+  .match_fun = NULL, .agg = NULL, .check = "~blC",
+  .conflict = NULL, .prefix = NULL, .fill = NULL, .mode = c("left",
+  "right", "inner", "full"))
 }
 \arguments{
 \item{.x, .y}{tbls to join}
@@ -15,14 +16,18 @@ eat(.x, .y, ..., .by = NULL,
 \item{...}{One or more unquoted expressions, passed to \code{dplyr::select},
 defining the columns to keep from \code{y}}
 
-\item{.by}{a character vector of variables to join by.}
+\item{.by}{a character vector of variables to join by, or a formula defining
+a joining condition using functions a notation such as
+\code{~ X("var1") > Y("var2") & X("var3") < Y("var4")}}
 
 \item{.na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
-different, like joins for database sources, similarly to
-\code{merge(incomparables = FALSE)}. The default, \code{"na"}, always treats two \code{NA}
-or \code{NaN} values as equal, like \code{merge()}. Users and package authors can
-change the default behavior by calling
-\code{pkgconfig::set_config("dplyr::na_matches" = "never")}.}
+different, like joins for database sources, similarly to}
+
+\item{.match_fun}{passed to \code{fuzzyjoin::fuzzy_join}. Vectorized function
+given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
+match. Can be a list of functions one for each pair of columns specified in
+by (if a named list, it uses the names in x). If only one function is given
+it is used on all column pairs.}
 
 \item{.agg}{function or formula or \code{NULL}, if not \code{NULL}, \code{y}
 will be grouped by its \code{by} columns and \code{fun} will be applied to
@@ -39,13 +44,13 @@ values will be kept`}
 \item{.prefix}{prefix of new columns or function/formula to apply on names of new
 columns}
 
-\item{.join}{type of join o build on, a left join by default}
+\item{.mode}{type of join on build on, a left join by default}
 }
 \value{
 a data frame
 }
 \description{
-Modified left_join where only a specified subset of \code{y} is kept, with
+Modified join where only a specified subset of \code{y} is kept, with
 optional checks and transformations.
 }
 \details{
