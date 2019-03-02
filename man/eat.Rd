@@ -4,8 +4,10 @@
 \alias{eat}
 \title{Eat columns from another data frame}
 \usage{
-eat(.x, .y, ..., .by = NULL, .agg = NULL, .check = "~blC",
-  .conflict = NULL, .prefix = NULL)
+eat(.x, .y, ..., .by = NULL,
+  .na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  .agg = NULL, .check = "~blC", .conflict = NULL, .prefix = NULL,
+  .mode = c("left", "right", "inner", "full"))
 }
 \arguments{
 \item{.x, .y}{tbls to join}
@@ -14,6 +16,13 @@ eat(.x, .y, ..., .by = NULL, .agg = NULL, .check = "~blC",
 defining the columns to keep from \code{y}}
 
 \item{.by}{a character vector of variables to join by.}
+
+\item{.na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
+different, like joins for database sources, similarly to
+\code{merge(incomparables = FALSE)}. The default, \code{"na"}, always treats two \code{NA}
+or \code{NaN} values as equal, like \code{merge()}. Users and package authors can
+change the default behavior by calling
+\code{pkgconfig::set_config("dplyr::na_matches" = "never")}.}
 
 \item{.agg}{function or formula or \code{NULL}, if not \code{NULL}, \code{y}
 will be grouped by its \code{by} columns and \code{fun} will be applied to
@@ -29,6 +38,8 @@ values will be kept`}
 
 \item{.prefix}{prefix of new columns or function/formula to apply on names of new
 columns}
+
+\item{.join}{type of join o build on, a left join by default}
 }
 \value{
 a data frame
