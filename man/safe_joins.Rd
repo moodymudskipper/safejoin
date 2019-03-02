@@ -12,25 +12,32 @@
 \title{Safe joins}
 \usage{
 safe_left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~blC", conflict = NULL)
+  na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 
 safe_right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~blC", conflict = NULL)
+  ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 
 safe_inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., check = "~blC", conflict = NULL)
+  ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 
 safe_full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., check = "~blC", conflict = NULL)
+  na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 
-safe_semi_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC",
-  conflict = NULL)
+safe_semi_join(x, y, by = NULL, copy = FALSE,
+  na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 
-safe_anti_join(x, y, by = NULL, copy = FALSE, ..., check = "~blC",
-  conflict = NULL)
+safe_anti_join(x, y, by = NULL, copy = FALSE,
+  na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 
 safe_nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE,
-  name = NULL, ..., check = "~blC", conflict = NULL)
+  name = NULL, na_matches = pkgconfig::get_config("dplyr::na_matches"),
+  check = "~blC", conflict = NULL)
 }
 \arguments{
 \item{x, y}{tbls to join}
@@ -53,9 +60,6 @@ it is a potentially expensive operation so you must opt into it.}
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
-
-\item{...}{other parameters passed onto methods, for instance, \code{na_matches}
-to control how \code{NA} values are matched.  See \link{join.tbl_df} for more.}
 
 \item{check}{a string, see details}
 
