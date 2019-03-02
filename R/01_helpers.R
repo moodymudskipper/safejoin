@@ -22,11 +22,6 @@ paste_enum <- function(..., sep = ", ", sep2 = " and "){
   paste(paste(utils::head(l,-1),collapse = sep), utils::tail(l,1), sep = sep2)
 }
 
-
-
-
-
-
 resolve_conflicts <- function(
   res, patch, apply_conflict_fun, conflict_fun, common_aux){
   if (patch) {
@@ -45,21 +40,21 @@ resolve_conflicts <- function(
   res
 }
 
-with_friendly_dot_error <- function(fun){
-  fiendly_fun <- fun
-  body(fiendly_fun) <- substitute({
-    MC <- match.call()
-    MC[[1]] <- quote(fun)
-    res <- try(eval.parent(MC),silent = TRUE)
-    if (inherits(res,"try-error")) {
-      frmls <- setdiff(names(formals()),"...")
-      dot_names <- names(eval(substitute(alist(...))))
-      candidates <- intersect(paste0(".",dot_names), frmls)
-      stop(attr(res,"condition")$message,
-           "\nDid you forget the dots in argument(s): ",
-           paste0(candidates, collapse = ", ")," ?")
-    }
-    res
-  })
-  fiendly_fun
-}
+# with_friendly_dot_error <- function(fun){
+#   fiendly_fun <- fun
+#   body(fiendly_fun) <- substitute({
+#     MC <- match.call()
+#     MC[[1]] <- quote(fun)
+#     res <- try(eval.parent(MC),silent = TRUE)
+#     if (inherits(res,"try-error")) {
+#       frmls <- setdiff(names(formals()),"...")
+#       dot_names <- names(eval(substitute(alist(...))))
+#       candidates <- intersect(paste0(".",dot_names), frmls)
+#       stop(attr(res,"condition")$message,
+#            "\nDid you forget the dots in argument(s): ",
+#            paste0(candidates, collapse = ", ")," ?")
+#     }
+#     res
+#   })
+#   fiendly_fun
+# }

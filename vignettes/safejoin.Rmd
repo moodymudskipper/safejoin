@@ -1,18 +1,22 @@
 ---
-output: github_document
+title: "Package safejoin"
+author: "Antoine Fabri"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, echo = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
+  comment = "#>"
 )
 ```
 
-## safejoin
+## Introduction
 
 The package *safejoin* features wrappers around packages *dplyr* and
 *fuzzyjoin*'s functions to join safely using various checks. It also comes

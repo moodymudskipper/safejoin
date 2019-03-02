@@ -3,7 +3,7 @@
 safejoin
 --------
 
-The package *safejoin* features wrappers around pakckages *dplyr* and *fuzzyjoin*'s functions to join safely using various checks.
+The package *safejoin* features wrappers around packages *dplyr* and *fuzzyjoin*'s functions to join safely using various checks.
 
 Install package with:
 
@@ -43,11 +43,12 @@ Additionally when identically named columns are present on both sides, we can ag
 
 The package features functions `safe_left_join`, `safe_right_join`, `safe_inner_join`, `safe_full_join`, `safe_nest_join`, `safe_semi_join`, `safe_anti_join`, and `eat`.
 
-The additional function, `eat` is designed to be an improved left join in the cases where one is growing a data frame. In addition to the features above :
+The additional function, `eat` is designed to be an improved join in the cases where one is growing a data frame. In addition to the features above :
 
--   It uses the `...` argument to select columns from `y` and leverages the select helpers from *dplyr*, allowing also things like renaming on the fly, negative selection, quasi-quotation...
+-   It uses the `...` argument to select columns from `.y` and leverages the select helpers from *dplyr*, allowing also things like renaming, negative selection, quasi-quotation...
 -   It can prefix new columns or rename them in a flexible way
--   It can summarize `y` on the fly along joining columns for more concise and readable code
+-   It can summarize `.y` on the fly along joining columns for more concise and readable code
+-   
 
 The support of `fuzzyjoin` functions is done in two ways, `fuzzyjoin` functions will be used instead of `dplyr`'s functions if :
 
@@ -379,15 +380,31 @@ safe_left_join(band_members_extended,
 
 Some common use cases for numerics would be `` confict = `+` ``, `confict = pmin`, , `confict = pmax`, `confict = ~(.x+.y)/2`.
 
+`conflict = "patch"` is a special value where matches found in `y` overwrite the values in `x`, and other values are kept. It's different from `conflict = ~coalesce(.y,.x)` because some values in `x` might be overwritten by `NA`.
+
+``` r
+safe_left_join(band_members_extended, 
+               band_instruments_extended,
+               by = "name", conflict = "patch")
+#> # A tibble: 4 x 4
+#>   name  band    cooks plays 
+#>   <chr> <chr>   <fct> <chr> 
+#> 1 Mick  Stones  pasta <NA>  
+#> 2 John  Beatles pizza guitar
+#> 3 Paul  Beatles pasta bass  
+#> 4 John  The Who pizza guitar
+```
+
 eat
 ---
 
-All the checks above are still relevant for `eat`, we'll silence them below to focus on the additional features.
+All the checks above are still relevant for `eat`, we'll silence them below with `check=""` to focus on the additional features.
 
 Same as `safe_left_join` :
 
 ``` r
-band_members_extended %>% eat(band_instruments_extended)
+band_members_extended %>% 
+  eat(band_instruments_extended)
 #> Joining, by = c("name", "cooks")
 #> Warning: The pair cooks/cooks don't have the same levels:
 #> x: pasta, pizza, spaghetti
@@ -399,7 +416,8 @@ band_members_extended %>% eat(band_instruments_extended)
 #> 2 John  Beatles pizza     guitar
 #> 3 Paul  Beatles spaghetti <NA>  
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, .by="name", .check = "")
+band_members_extended %>% 
+  eat(band_instruments_extended, .by="name", .check = "")
 #> # A tibble: 4 x 5
 #>   name  band    cooks.x   plays  cooks.y
 #>   <chr> <chr>   <fct>     <chr>  <fct>  
@@ -411,18 +429,11 @@ band_members_extended %>% eat(band_instruments_extended, .by="name", .check = ""
 
 The names of `eat`'s parameters start with a dot to minimize the risk of conflict when naming the arguments fed to the `...`. The `...` are usually used to pass columns to be eaten, but they are passed to `select` so more features are available.
 
-Rename eaten columns :
+Select which column to eat:
 
 ``` r
-band_members_extended %>% eat(band_instruments_extended, .prefix = "NEW", .check = "")
-#> # A tibble: 4 x 4
-#>   name  band    cooks     NEW_plays
-#>   <chr> <chr>   <chr>     <chr>    
-#> 1 Mick  Stones  pasta     <NA>     
-#> 2 John  Beatles pizza     guitar   
-#> 3 Paul  Beatles spaghetti <NA>     
-#> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, plays, .by="name", .check = "")
+band_members_extended %>% 
+  eat(band_instruments_extended, plays, .by="name", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -430,7 +441,8 @@ band_members_extended %>% eat(band_instruments_extended, plays, .by="name", .che
 #> 2 John  Beatles pizza     guitar
 #> 3 Paul  Beatles spaghetti bass  
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, -cooks, .by="name", .check = "")
+band_members_extended %>% 
+  eat(band_instruments_extended, -cooks, .by="name", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -438,15 +450,8 @@ band_members_extended %>% eat(band_instruments_extended, -cooks, .by="name", .ch
 #> 2 John  Beatles pizza     guitar
 #> 3 Paul  Beatles spaghetti bass  
 #> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, PLAYS = plays, .check = "")
-#> # A tibble: 4 x 4
-#>   name  band    cooks     PLAYS 
-#>   <chr> <chr>   <chr>     <chr> 
-#> 1 Mick  Stones  pasta     <NA>  
-#> 2 John  Beatles pizza     guitar
-#> 3 Paul  Beatles spaghetti <NA>  
-#> 4 John  The Who pizza     guitar
-band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="name", .check ="")
+band_members_extended %>% 
+  eat(band_instruments_extended, starts_with("p"), .by="name", .check ="")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -456,10 +461,34 @@ band_members_extended %>% eat(band_instruments_extended, starts_with("p"), .by="
 #> 4 John  The Who pizza     guitar
 ```
 
+Rename eaten columns :
+
+``` r
+band_members_extended %>% 
+  eat(band_instruments_extended, .prefix = "NEW", .check = "")
+#> # A tibble: 4 x 4
+#>   name  band    cooks     NEW_plays
+#>   <chr> <chr>   <chr>     <chr>    
+#> 1 Mick  Stones  pasta     <NA>     
+#> 2 John  Beatles pizza     guitar   
+#> 3 Paul  Beatles spaghetti <NA>     
+#> 4 John  The Who pizza     guitar
+band_members_extended %>% 
+  eat(band_instruments_extended, PLAYS = plays, .check = "")
+#> # A tibble: 4 x 4
+#>   name  band    cooks     PLAYS 
+#>   <chr> <chr>   <chr>     <chr> 
+#> 1 Mick  Stones  pasta     <NA>  
+#> 2 John  Beatles pizza     guitar
+#> 3 Paul  Beatles spaghetti <NA>  
+#> 4 John  The Who pizza     guitar
+```
+
 We can check if the dot argument was used by using the character `"d"` in the check string:
 
 ``` r
-band_members_extended %>% eat(band_instruments_extended, .check ="~d")
+band_members_extended %>% 
+  eat(band_instruments_extended, .check ="~d")
 #> Column names not provided, all columns from y will be eaten :
 #> plays
 #> # A tibble: 4 x 4
@@ -474,7 +503,8 @@ band_members_extended %>% eat(band_instruments_extended, .check ="~d")
 In cases of matching to many (i.e. the join columns don't form a unique key for `y`), we can use the parameter `.agg` to aggregate them on the fly:
 
 ``` r
-band_instruments_extended %>% eat(band_members_extended, .check = "")
+band_instruments_extended %>% 
+  eat(band_members_extended, .check = "")
 #> # A tibble: 4 x 4
 #>   name  plays  cooks band   
 #>   <chr> <chr>  <chr> <chr>  
@@ -482,7 +512,8 @@ band_instruments_extended %>% eat(band_members_extended, .check = "")
 #> 2 John  guitar pizza The Who
 #> 3 Paul  bass   pasta <NA>   
 #> 4 Keith guitar pizza <NA>
-band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collapse="/"), .check = "")
+band_instruments_extended %>% 
+  eat(band_members_extended, .agg = ~paste(.,collapse="/"), .check = "")
 #> # A tibble: 3 x 4
 #>   name  plays  cooks band           
 #>   <chr> <chr>  <chr> <chr>          
@@ -491,15 +522,48 @@ band_instruments_extended %>% eat(band_members_extended, .agg = ~paste(.,collaps
 #> 3 Keith guitar pizza <NA>
 ```
 
-Finally, `conflict = "patch"` is a special value where matches found in `y` overwrite the values in `x`, and other values are kept. It's different from `conflict = ~coalesce(.y,.x)` because some values in `x` might be overwritten by `NA`.
+Finally we can eat a list of data frames at once, and optionally override the `.prefix` argument by providing names to the elements.
 
 ``` r
-band_members_extended %>% eat(band_instruments_extended, .by="name", .conflict = "patch", .check = "")
-#> # A tibble: 4 x 4
-#>   name  band    cooks plays 
-#>   <chr> <chr>   <fct> <chr> 
-#> 1 Mick  Stones  pasta <NA>  
-#> 2 John  Beatles pizza guitar
-#> 3 Paul  Beatles pasta bass  
-#> 4 John  The Who pizza guitar
+X <- data.frame(a = 1:2,b = 1:2)
+Y1 <- list(data.frame(a = 1:2,c = 3:4), data.frame(a = 1:2,d = 5:6))
+eat(X, Y1)
+#> Joining, by = "a"
+#> 
+#> Joining, by = "a"
+#>   a b c d
+#> 1 1 1 3 5
+#> 2 2 2 4 6
+
+Y2 <- list(data.frame(a = 1:2,c = c(3,NA)), data.frame(a = 1:2,c = c(NA,4)))
+eat(X, Y2, .by = "a", .conflict = coalesce)
+#>   a b c
+#> 1 1 1 3
+#> 2 2 2 4
+
+Y3 <- list(FOO = data.frame(a = 1:2,c = 3:4), BAR = data.frame(a = 1:2,d = 5:6))
+eat(X, Y3)
+#> Joining, by = "a"
+#> 
+#> Joining, by = "a"
+#>   a b FOO_c BAR_d
+#> 1 1 1     3     5
+#> 2 2 2     4     6
+
+Y4 <- list(FOO = data.frame(a = 1:2, c = 3:4, d = 5:6), 
+           BAR = data.frame(a = 1:2, c = 3:4, e = 7:8))
+eat(X, Y4)
+#> Joining, by = "a"
+#> 
+#> Joining, by = "a"
+#>   a b FOO_c FOO_d BAR_c BAR_e
+#> 1 1 1     3     5     3     7
+#> 2 2 2     4     6     4     8
+eat(X, Y4, c)
+#> Joining, by = "a"
+#> 
+#> Joining, by = "a"
+#>   a b FOO_c BAR_c
+#> 1 1 1     3     3
+#> 2 2 2     4     4
 ```

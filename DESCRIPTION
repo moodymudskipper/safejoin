@@ -1,12 +1,16 @@
 Package: safejoin
-Title: Safe joins
+Title: Wrappers around `dplyr` and `fuzzyjoin`s functions to join safely using various checks.
 Version: 0.0.0.9000
 Authors@R:
     person(given = "Antoine",
            family = "Fabri",
            role = c("aut", "cre"),
            email = "antoine.fabri@gmail.com")
-Description: Wrappers around dplyr functions to join safely using various checks.
+Description: The package *safejoin* features wrappers around packages *dplyr* and
+    *fuzzyjoin*'s functions to join safely using various checks. It also comes
+    packed with features to select columns, rename them, operate on conflicting 
+    ones (coalesce for example), or aggregate the rhs on the joining columns
+    before joining.
 License: GPL-3
 Encoding: UTF-8
 Language: en
