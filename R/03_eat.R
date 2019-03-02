@@ -45,6 +45,22 @@ eat <- function(.x, .y, ..., .by = NULL,
 
   .mode <- match.arg(.mode)
 
+  ############################
+  # HANDLE .y IF IT'S A LIST #
+  ############################
+
+  if (is.list(.y) && !is.data.frame(.y)){
+    dots <- enquos(...)
+    res <- purrr::reduce2(
+      .y, rlang::names2(.y), .init = .x,
+      ~ eat(
+        .x, .y, !!!dots, .by = .by, .na_matches = .na_matches,
+        .match_fun = .match_fun, .agg = .agg, .check = .check,
+        .conflict = .conflict, .fill = .fill, .mode = .mode,
+        .prefix = if(..3 != "") ..3 else .prefix))
+    return(res)
+  }
+
   ##############################
   # HANDLE FORMULA INPUT OF BY #
   ##############################
@@ -67,7 +83,7 @@ eat <- function(.x, .y, ..., .by = NULL,
   L <- safe_check(x = .x, y = .y, by = .by, match_fun = .match_fun,
                   check = .check, conflict = .conflict, in_eat = TRUE,
                   suffix = c(".x",".y"),
-                  agg = .agg, prefix = .prefix, dots = eval(substitute(alist(...))))
+                  agg = .agg, prefix = .prefix, dots = enquos(...)) #eval(substitute(alist(...))))
   with(L,{
     if (!is.null(.match_fun)) {
       ###############
@@ -117,6 +133,7 @@ eat <- function(.x, .y, ..., .by = NULL,
     res
   })
 }
+
 
 
 eat.list <- function(.x, .y, ..., .by = NULL,

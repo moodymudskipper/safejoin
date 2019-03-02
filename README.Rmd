@@ -14,8 +14,8 @@ knitr::opts_chunk$set(
 
 ## safejoin
 
-The package *safejoin* features wrappers around *dplyr*'s functions to join 
-safely using various checks
+The package *safejoin* features wrappers around pakckages *dplyr* and
+*fuzzyjoin*'s functions to join safely using various checks.
 
 Install package with:
 
@@ -35,9 +35,10 @@ Joining operations often come with tests, one might want to check that:
  4. Join columns form a unique key on both or either tables
  5. All rows of both or either tables will be matched
  6. All combinations of values of join columns are present on both or either sides
+ 7. columns used for joins have same class and type
  
-This package provides the possibility for any of these cases to ignore, inform,
-warn or abort. 
+This package provides the possibility  to ignore, inform,
+warn or abort for any of combination of these cases.
 
 These checks are handled by a single string parameter, i.e. a sequence of
 characters where uppercase letters trigger failures, lower case letters trigger
@@ -52,26 +53,38 @@ warnings, and letters prefixed with `~` trigger messages, the codes are as follo
 * `"e"` like *expand* to check that all combinations of joining columns are present in `x`
 * `"f"`  to check that all combinations of joining columns are present in `y`
 * `"l"`  like *levels* to check that matching is consistent with levels of factor columns
+* `"t"`  like *type* to check that joining columns have same class and type
 
 For example, `check = "MN"` will ensure that all rows of both tables are matched.
 
 Additionally when identically named columns are present on both
-sides, we can aggregate them into one in flexible ways (including coalesce or
-just keeping one of them). This is done through the `conflict` parameter.
+sides, we can aggregate them into one in flexible ways (including coalesce,
+nestn or just keeping one of them). This is done through the `conflict` parameter.
 
 The package features functions `safe_left_join`, `safe_right_join`, 
 `safe_inner_join`,  `safe_full_join`, `safe_nest_join`,  `safe_semi_join`, 
 `safe_anti_join`, and `eat`.
 
 The additional function, `eat`
-is designed to be an improved left join in the cases where one is growing a 
+is designed to be an improved join in the cases where one is growing a 
 data frame. In addition to the features above :
 
-* It uses the `...` argument to select columns from `y` and leverages the select helpers from *dplyr*, allowing also things like renaming on the fly, negative selection, 
-  quasi-quotation...
+* It uses the `...` argument to select columns from `.y` and leverages the select helpers from *dplyr*, allowing also things like renaming, negative selection, quasi-quotation...
 * It can prefix new columns or rename them in a flexible way
-* It can summarize `y` on the fly along joining columns for more concise and
+* It can summarize `.y` on the fly along joining columns for more concise and
 readable code
+* 
+
+The support of `fuzzyjoin` functions is done in two ways, `fuzzyjoin` functions 
+will be used instead of `dplyr`'s functions if :
+
+* The argument `match_fun` is filled. Then the standard `fuzzyjoin` interface
+is leveraged, except that `safejoin` supports formula notation for this argument.
+* A formula argument is provided to the `by` argument, it should use a notation
+like `~ X("var1") > Y("var2") & X("var3") < Y("var4")`. This was introduced to
+avoid using the arguments `multi_by` and `multi_match_fun` from 
+`fuzzyjoin::fuzzy_join` which I felt were confusing, and have a single readable
+argument instead..
 
 ## safe_left_join
 
@@ -187,19 +200,44 @@ safe_left_join(band_members_extended,
                check = "~l")
 ```
 
-In case of confict choose either the column from `x` or from `y`:
+In case of confict, choose either the column from `x` or from `y`:
 
 ```{r}
-band_members_extended %>% safe_left_join(band_instruments_extended, by = "name", conflict = ~.x)
-band_members_extended %>% safe_left_join(band_instruments_extended, by = "name", conflict = ~.y)
+safe_left_join(band_members_extended,
+               band_instruments_extended, by = "name",
+               conflict = ~.x)
+
+safe_left_join(band_members_extended,
+               band_instruments_extended, 
+               by = "name", 
+               conflict = ~.y)
 ```
 
-Our apply any transformation :
+Or nest the conflicted columns :
 
 ```{r}
-band_members_extended %>% safe_left_join(band_instruments_extended, by = "name", conflict = coalesce)
-band_members_extended %>% safe_left_join(band_instruments_extended, by = "name", conflict = ~coalesce(.y,.x))
-band_members_extended %>% safe_left_join(band_instruments_extended, by = "name", conflict = paste)
+safe_left_join(band_members_extended,
+               band_instruments_extended, by = "name", 
+               conflict = ~data.frame(.x = .x, .y = .y))
+```
+
+Our coalesce them :
+
+```{r}
+safe_left_join(band_members_extended, 
+               band_instruments_extended, 
+               by = "name", conflict = coalesce)
+safe_left_join(band_members_extended, 
+               band_instruments_extended, 
+               by = "name", conflict = ~coalesce(.y,.x))
+```
+
+Or do any custom transformation :
+
+```{r}
+safe_left_join(band_members_extended, 
+               band_instruments_extended, 
+               by = "name", conflict = paste)
 ```
 
 Some common use cases for numerics would be ``confict = `+` ``, `confict = pmin`,
