@@ -40,6 +40,7 @@ eat <- function(.x, .y, ..., .by = NULL,
                 .check = "~blC",
                 .conflict = NULL,
                 .prefix = NULL,
+                .fill = NULL,
                 .mode = c("left","right","inner","full")) {
 
   .mode <- match.arg(.mode)
@@ -100,6 +101,19 @@ eat <- function(.x, .y, ..., .by = NULL,
     #####################
     res <- resolve_conflicts(
       res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
+
+    ########
+    # FILL #
+    ########
+    if(!is.null(.fill)){
+      # relevant columns are those from y (already renamed) that are not conflicted
+      # to these must be added cols ending with ".y" that are not part of
+      # x, as it means they've been added by the joining fun
+      suffixed <- setdiff(grep("\\.y$",names(res), value = TRUE),
+                          paste0(names(x)))
+      nms <- union(setdiff(names(y), names(x)), suffixed)
+      res[nms][is.na(res[nms])] <- .fill
+    }
     res
   })
 }

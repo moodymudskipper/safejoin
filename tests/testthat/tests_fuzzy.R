@@ -20,6 +20,17 @@ test_that("fuzzy joins work using safe_left_join", {
   testthat::expect_equal(
     safe_left_join(a, b, ~ X("x") > Y("start") & X("x") <  Y("end")),
     safe_left_join(a, b, ~ X(1) > Y(1) & X(1) <  Y(2)))
+
+  # fill works
+  # with suffix .y
+  testthat::expect_equal(
+    sum(is.na(eat(x,y,.match_fun = `<`, .check = "", .fill = 0))),
+    0)
+  # with renamed cols
+  testthat::expect_equal(
+    sum(is.na(eat(x,y,.match_fun = `<`, .check = "c", .fill = 0, .prefix = "NEW"))),
+    0)
+
 })
 
 test_that("fuzzy joins work using eat", {
@@ -36,7 +47,7 @@ test_that("fuzzy joins work using eat", {
   a <- data.frame(x = c(1,3,5))
   b <- data.frame(start = c(0,4),end = c(2,6),y = c("a","b"))
   testthat::expect_equal(
-    dim(eat(a, b, .by=~ X("x") > Y("start") & X("x") <  Y("end"))),
+    dim(eat(a, b, .by = ~ X("x") > Y("start") & X("x") <  Y("end"))),
     c(3,4))
   # numeric indices
   testthat::expect_equal(
@@ -69,7 +80,7 @@ test_that("fuzzy joins, adding a column, work with eat", {
     fuzzyjoin::fuzzy_join(df1, df2, multi_by = c("mz1" = "mz2", "rt1" = "rt2"),
                multi_match_fun = mmf1, mode = "full"),
     eat(df1,df2, .by = ~abs(X(1) - Y(1)) < .05 & abs(X(2) - Y(2)) <= .1,
-    .mode= "full"))
+    .mode = "full"))
 
   mmf2 <- function(x, y) {
     mz_dist <- abs(x[, 1] - y[, 1])
@@ -80,7 +91,7 @@ test_that("fuzzy joins, adding a column, work with eat", {
   testthat::expect_equal(
     fuzzyjoin::fuzzy_join(df1, df2, multi_by = c("mz1" = "mz2", "rt1" = "rt2"),
                multi_match_fun = mmf2, mode = "full"),
-    eat(df1,df2, .mode = "full", .by= ~ data.frame(
+    eat(df1,df2, .mode = "full", .by = ~ data.frame(
       abs(X(1) - Y(1)) < .05 & abs(X(2) - Y(2)) <= .1,
       dist = sqrt(abs(X(1) - Y(1))^2 +  abs(X(2) - Y(2))^2))))
 
@@ -93,38 +104,9 @@ test_that("fuzzy joins, adding a column, work with eat", {
   }
 
   testthat::expect_error(
-    eat(df1,df2, .mode = "full", .by=~ data.frame(
+    eat(df1,df2, .mode = "full", .by =~ data.frame(
       abs(X(1) - Y(1)) < .05 & abs(X(2) - Y(2)) <= .1,
       rt2 = sqrt(abs(X(1) - Y(1))^2 +  abs(X(2) - Y(2))^2))),
     "column name conflict.")
 
 })
-
-
-
-
-
-x <- as.character(substitute(x))
-
-function1 <- function (x, y, train, test){
-  a <- eval(substitute(train$x, list(x = substitute(x))))
-  b <- eval(substitute(train$y, list(y = substitute(y))))
-  c <- eval(substitute(test$x, list(x = substitute(x))))
-  d <- eval(substitute(test$y, list(y = substitute(y))))
-  return(list(a,b,c,d))
-}
-iris2 <- head(iris,2)
-function1(Petal.Length, Petal.Width, iris2, iris2)
-
-# [[1]]
-# [1] 1.4 1.4
-#
-# [[2]]
-# [1] 0.2 0.2
-#
-# [[3]]
-# [1] 1.4 1.4
-#
-# [[4]]
-# [1] 0.2 0.2
-#
