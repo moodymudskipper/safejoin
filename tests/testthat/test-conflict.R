@@ -23,9 +23,3 @@ test_that("conflict works", {
     x %>% safe_left_join(y, by = "name", conflict = "patch") %>% pull(plays),
     c("GUITAR", "BASS", NA))
 })
-
-
-# x <- data.frame(a=1,b=1)
-# y <- data.frame(a=1,c=1)
-# eat(x,y, .by=c(a="c"), .check = "C")
-

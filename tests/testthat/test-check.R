@@ -81,7 +81,7 @@ test_that("character 'c' works", {
   # conflict on j column
   x <- band_instruments %>% mutate(j = "cst")
   y <- band_members %>% mutate(j = "cst")
-  txt <- "Conflict of auxiliary columns"
+  txt <- "Conflict of columns"
   expect_error(  safe_left_join(x, y, check =  "C", by = "name"), txt)
   expect_warning(safe_left_join(x, y, check =  "c", by = "name"), txt)
   expect_message(safe_left_join(x, y, check = "~c", by = "name"), txt)
@@ -167,4 +167,26 @@ test_that("character 'd' works", {
   txt <- "not provided"
   expect_warning(eat(x, y, .check =  "d"), txt)
   expect_message(eat(x, y, .check = "~d"), txt)
+})
+
+
+test_that("conflicts are handled with fuzzy joins", {
+x <- band_instruments
+y <- band_members
+z <- rename(band_members, n = name)
+# conflict on grouping column
+expect_error(safe_left_join(x, y, by = "name", match_fun = `>`, check = "C"))
+# conflict on auxiliary columns
+expect_error(safe_left_join(y, z, by = c(name = "n"), match_fun = `>`, check = "C"))
+# ignoring the conflict
+expect_silent(safe_left_join(x, y, by = "name", match_fun = `>`, check = ""))
+# no conflict at all
+expect_silent(safe_left_join(x, z, by = c(name = "n"), match_fun = `>`, check = "C"))
+# dealing with the aux col  conflict
+expect_silent(safe_left_join(y, z, by = c(name = "n"), match_fun = `>`, conflict = paste0))
+# dealing with the group col conflict
+expect_silent(safe_left_join(x, y, by = "name", match_fun = `>`, conflict = paste0))
+# renaming columns
+expect_silent(eat(x, y, .by = "name", .match_fun = `>`, .prefix = "NEW"))
+
 })
