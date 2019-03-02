@@ -3,7 +3,7 @@
 safejoin
 --------
 
-The package *safejoin* features wrappers around packages *dplyr* and *fuzzyjoin*'s functions to join safely using various checks.
+The package *safejoin* features wrappers around packages *dplyr* and *fuzzyjoin*'s functions to join safely using various checks. It also comes packed with features to select columns, rename them, operate on conflicting ones (coalesce for example), or aggregate the rhs on the joining columns before joining.
 
 Install package with:
 
@@ -28,18 +28,18 @@ These checks are handled by a single string parameter, i.e. a sequence of charac
 
 -   `"c"` to check *c*onflicts of *c*olumns
 -   `"b"` like *"by"* checks if `by` parameter was given explicitly
--   `"u"` like *unique* to check that the join colums from an unique key on `x`
--   `"v"` to check that the join colums from an unique key on `y`
+-   `"u"` like *unique* to check that the join columns form an unique key on `x`
+-   `"v"` to check that the join columns form an unique key on `y`
 -   `"m"` like *match* to check that all rows of `x` have a *match*
 -   `"n"` to check that all rows of `y` have a *match*
 -   `"e"` like *expand* to check that all combinations of joining columns are present in `x`
 -   `"f"` to check that all combinations of joining columns are present in `y`
--   `"l"` like *levels* to check that matching is consistent with levels of factor columns
+-   `"l"` like *levels* to check that join columns are consistent in term of factor levels
 -   `"t"` like *type* to check that joining columns have same class and type
 
 For example, `check = "MN"` will ensure that all rows of both tables are matched.
 
-Additionally when identically named columns are present on both sides, we can aggregate them into one in flexible ways (including coalesce, nestn or just keeping one of them). This is done through the `conflict` parameter.
+Additionally when identically named columns are present on both sides, we can aggregate them into one in flexible ways (including coalesce, nest or just keeping one of them). This is done through the `conflict` parameter.
 
 The package features functions `safe_left_join`, `safe_right_join`, `safe_inner_join`, `safe_full_join`, `safe_nest_join`, `safe_semi_join`, `safe_anti_join`, and `eat`.
 
@@ -48,12 +48,12 @@ The additional function, `eat` is designed to be an improved join in the cases w
 -   It uses the `...` argument to select columns from `.y` and leverages the select helpers from *dplyr*, allowing also things like renaming, negative selection, quasi-quotation...
 -   It can prefix new columns or rename them in a flexible way
 -   It can summarize `.y` on the fly along joining columns for more concise and readable code
--   
+-   It can join recursively to a list of tables
 
 The support of `fuzzyjoin` functions is done in two ways, `fuzzyjoin` functions will be used instead of `dplyr`'s functions if :
 
 -   The argument `match_fun` is filled. Then the standard `fuzzyjoin` interface is leveraged, except that `safejoin` supports formula notation for this argument.
--   A formula argument is provided to the `by` argument, it should use a notation like `~ X("var1") > Y("var2") & X("var3") < Y("var4")`. This was introduced to avoid using the arguments `multi_by` and `multi_match_fun` from `fuzzyjoin::fuzzy_join` which I felt were confusing, and have a single readable argument instead..
+-   A formula argument is provided to the `by` argument. It should use a notation like `~ X("var1") > Y("var2") & X("var3") < Y("var4")`. This was introduced to avoid using the arguments `multi_by` and `multi_match_fun` from `fuzzyjoin::fuzzy_join` which I felt were confusing, and have a single readable argument instead.
 
 safe\_left\_join
 ----------------
@@ -65,7 +65,6 @@ We'll use *dplyr*'s data sets `band_members` and `band_instruments` along with e
 ``` r
 library(safejoin)
 library(dplyr,quietly = TRUE,warn.conflicts = FALSE)
-#> Warning: package 'dplyr' was built under R version 3.5.2
 band_members_extended <- band_members %>%
   mutate(cooks = factor(c("pasta","pizza","spaghetti"),
                         levels = c("pasta","pizza","spaghetti"))) %>%
@@ -110,7 +109,7 @@ Not applying any check :
 ``` r
 safe_left_join(band_members,
                band_instruments,
-               check ="")
+               check = "")
 #> # A tibble: 3 x 3
 #>   name  band    plays 
 #>   <chr> <chr>   <chr> 
@@ -124,7 +123,7 @@ Displaying "Joining, by..." like in default *dplyr* behavior:
 ``` r
 safe_left_join(band_members,
                band_instruments,
-               check ="~b")
+               check = "~b")
 #> Joining, by = "name"
 #> # A tibble: 3 x 3
 #>   name  band    plays 
@@ -200,8 +199,8 @@ Check if `x` has absent combinations:
 ``` r
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~e")
+               by = c("name","cooks"),
+               check = "~e")
 #> Some combinations of joining values are absent from x: 
 #> %s # A tibble: 6 x 2
 #>   name  cooks    
@@ -226,8 +225,8 @@ Check if `y` has absent combinations:
 ``` r
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~f")
+               by = c("name","cooks"),
+               check = "~f")
 #> Some combinations of joining values are absent from y: 
 #> %s # A tibble: 3 x 2
 #>   name  cooks
@@ -249,8 +248,8 @@ Check if `x` is unique on joining columns:
 ``` r
 safe_left_join(band_members_extended,
                band_instruments_extended,
-               by=c("name","cooks"),
-               check ="~u")
+               by = c("name","cooks"),
+               check = "~u")
 #> x is not unique on name and cooks
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
@@ -417,7 +416,7 @@ band_members_extended %>%
 #> 3 Paul  Beatles spaghetti <NA>  
 #> 4 John  The Who pizza     guitar
 band_members_extended %>% 
-  eat(band_instruments_extended, .by="name", .check = "")
+  eat(band_instruments_extended, .by = "name", .check = "")
 #> # A tibble: 4 x 5
 #>   name  band    cooks.x   plays  cooks.y
 #>   <chr> <chr>   <fct>     <chr>  <fct>  
@@ -433,7 +432,7 @@ Select which column to eat:
 
 ``` r
 band_members_extended %>% 
-  eat(band_instruments_extended, plays, .by="name", .check = "")
+  eat(band_instruments_extended, plays, .by = "name", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -442,7 +441,7 @@ band_members_extended %>%
 #> 3 Paul  Beatles spaghetti bass  
 #> 4 John  The Who pizza     guitar
 band_members_extended %>% 
-  eat(band_instruments_extended, -cooks, .by="name", .check = "")
+  eat(band_instruments_extended, -cooks, .by = "name", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -451,7 +450,7 @@ band_members_extended %>%
 #> 3 Paul  Beatles spaghetti bass  
 #> 4 John  The Who pizza     guitar
 band_members_extended %>% 
-  eat(band_instruments_extended, starts_with("p"), .by="name", .check ="")
+  eat(band_instruments_extended, starts_with("p"), .by = "name", .check = "")
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <fct>     <chr> 
@@ -488,7 +487,7 @@ We can check if the dot argument was used by using the character `"d"` in the ch
 
 ``` r
 band_members_extended %>% 
-  eat(band_instruments_extended, .check ="~d")
+  eat(band_instruments_extended, .check = "~d")
 #> Column names not provided, all columns from y will be eaten :
 #> plays
 #> # A tibble: 4 x 4
