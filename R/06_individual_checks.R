@@ -39,10 +39,10 @@ check_l <- function(x, y, by, l_check){
         by$x[i], by$y[i],
         paste(levels(x[[by$x[i]]]), collapse = ", "),
         paste(levels(y[[by$y[i]]]), collapse = ", ")))
+      x[[by$x[i]]] <- as.character(x[[by$x[i]]])
+      y[[by$y[i]]] <- as.character(y[[by$y[i]]])
     }
 
-    x[[by$x[i]]] <- as.character(x[[by$x[i]]])
-    y[[by$y[i]]] <- as.character(y[[by$y[i]]])
     get(l_check$fun)(txt)
   }
   dplyr::lst(x,y)
