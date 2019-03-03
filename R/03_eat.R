@@ -102,7 +102,7 @@ eat <- function(.x, .y, ..., .by = NULL,
         # using multi_by or safejoin formula notation
         res <- fuzzyjoin::fuzzy_join(
           x, y,
-          multi_by = multi_by,
+          multi_by = by,
           multi_match_fun = rlang::as_function(.match_fun),
           mode = .mode)
         check_fuzzy_conflicts(res, .check, x, y)
