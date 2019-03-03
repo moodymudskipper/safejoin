@@ -19,7 +19,9 @@ X <- function(var){
 
 Y <- function(var){
   eval.parent(substitute({
-    if (is.matrix(.y)) .y[,var] else .y
+    if (is.matrix(.y)) {
+      if(is.numeric(var) || var %in% colnames(.y)) .y[,var] else .y[,rename_to_conflicted(var)]
+        } else .y
   }))
 }
 

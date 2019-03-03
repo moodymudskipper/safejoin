@@ -78,6 +78,8 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
   L <- safe_check(x = x, y = y, by = by, check = check, conflict = conflict,
                   suffix = suffix, match_fun = match_fun, agg = NULL, prefix = NULL, dots = NULL)
   with(L, {
+
+    #browser()
     if (!is.null(match_fun)) {
       ###############
       # FUZZY JOINS #
@@ -92,7 +94,7 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
         # using multi_by or safejoin formula notation
         res <- fuzzyjoin::fuzzy_join(
           x, y,
-          multi_by = multi_by,
+          multi_by = by,
           multi_match_fun = rlang::as_function(match_fun),
           mode = mode)
         check_fuzzy_conflicts(res, check, x , y)

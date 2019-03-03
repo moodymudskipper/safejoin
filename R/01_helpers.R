@@ -27,18 +27,20 @@ resolve_conflicts <- function(
   if (patch) {
     dummy_col <- "*temp_dummy_y*"
     rows_lgl <- !is.na(res[[dummy_col]])
-    temp_cols <-  paste0("*",common_aux,"_conflicted*")
+    temp_cols <-  rename_to_conflicted(common_aux)
     res[rows_lgl, common_aux] <- res[rows_lgl,temp_cols]
     res <- dplyr::mutate_at(res,c(dummy_col,temp_cols), ~NULL)
   } else if (apply_conflict_fun) {
     for (aux in common_aux) {
-      res[[aux]] <- conflict_fun(res[[aux]], res[[paste0("*",aux,"_conflicted*")]])
+      res[[aux]] <- conflict_fun(res[[aux]], res[[rename_to_conflicted(aux)]])
     }
-    temp_cols <-  paste0("*",common_aux,"_conflicted*")
+    temp_cols <-  rename_to_conflicted(common_aux)
     res[temp_cols] <- NULL
   }
   res
 }
+
+rename_to_conflicted <- function(x) paste0("...", x, "_conflicted...")
 
 # with_friendly_dot_error <- function(fun){
 #   fiendly_fun <- fun

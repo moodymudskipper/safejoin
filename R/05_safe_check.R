@@ -114,16 +114,16 @@ safe_check <- function(x, y, by, check, conflict, suffix, match_fun, in_eat = FA
         conflict_fun <- rlang::as_function(conflict)
         if (any(conflicted_nms %in% by$y)) # in case of a fuzzy join
           by$y[by$y %in% conflicted_nms] <-
-            paste0("*", by$y[by$y %in% conflicted_nms] , "_conflicted*")
-        y <- dplyr::rename_at(y, conflicted_nms,~paste0("*", .x, "_conflicted*"))
+            rename_to_conflicted(by$y[by$y %in% conflicted_nms])
+        y <- dplyr::rename_at(y, conflicted_nms, rename_to_conflicted)
         apply_conflict_fun <- TRUE
       } else if (conflict == "patch") {
         # if it's "patch", rename y conflicted columns to temp names,
         # creates column to know where matches occured and switch flag
         if (any(conflicted_nms %in% by$y)) # in case of a fuzzy join
           by$y[by$y %in% conflicted_nms] <-
-            paste0("*", by$y[by$y %in% conflicted_nms] , "_conflicted*")
-        y <- dplyr::rename_at(y, conflicted_nms,~paste0("*", .x, "_conflicted*"))
+            rename_to_conflicted(by$y[by$y %in% conflicted_nms])
+        y <- dplyr::rename_at(y, conflicted_nms, rename_to_conflicted)
         #x <- mutate(x, `*temp_dummy_x*` = 1)
         y <- dplyr::mutate(y, `*temp_dummy_y*` = 1)
         patch <- TRUE
