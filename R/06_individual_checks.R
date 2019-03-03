@@ -42,7 +42,8 @@ check_l <- function(x, y, by, l_check){
       x[[by$x[i]]] <- as.character(x[[by$x[i]]])
       y[[by$y[i]]] <- as.character(y[[by$y[i]]])
     }
-
+    if (l_check$fun != "abort")
+      txt <- paste0(txt, "They'll be coerced to character\n")
     get(l_check$fun)(txt)
   }
   dplyr::lst(x,y)
