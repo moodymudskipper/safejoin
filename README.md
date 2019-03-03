@@ -39,7 +39,7 @@ These checks are handled by a single string parameter, i.e. a sequence of charac
 
 For example, `check = "MN"` will ensure that all rows of both tables are matched.
 
-Additionally when identically named columns are present on both sides, we can aggregate them into one in flexible ways (including coalesce, nest or just keeping one of them). This is done through the `conflict` parameter.
+Additionally when identically named columns are present on both sides, we can aggregate them into one in flexible ways (including coalesce or just keeping one of them). This is done through the `conflict` parameter.
 
 The package features functions `safe_left_join`, `safe_right_join`, `safe_inner_join`, `safe_full_join`, `safe_nest_join`, `safe_semi_join`, `safe_anti_join`, and `eat`.
 
@@ -322,22 +322,7 @@ safe_left_join(band_members_extended,
 #> 4 John  The Who pizza guitar
 ```
 
-Or nest the conflicted columns :
-
-``` r
-safe_left_join(band_members_extended,
-               band_instruments_extended, by = "name", 
-               conflict = ~data.frame(.x = .x, .y = .y))
-#> # A tibble: 4 x 4
-#>   name  band    cooks$.x  $.y   plays 
-#>   <chr> <chr>   <fct>     <fct> <chr> 
-#> 1 Mick  Stones  pasta     <NA>  <NA>  
-#> 2 John  Beatles pizza     pizza guitar
-#> 3 Paul  Beatles spaghetti pasta bass  
-#> 4 John  The Who pizza     pizza guitar
-```
-
-Our coalesce them :
+Or coalesce them :
 
 ``` r
 safe_left_join(band_members_extended, 
