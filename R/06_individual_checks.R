@@ -61,7 +61,7 @@ check_m <- function(x, y, by, m_check){
   if (m_check$lgl && nrow(
     unmatched <- dplyr::setdiff(dplyr::distinct(x[by$x]),
                                 `names<-`(dplyr::distinct(y[by$y]),by$x)))) {
-    txt <- paste("x has unmatched sets of joining values: \n%s",
+    txt <- paste("x has unmatched sets of joining values: \n",
                  paste(utils::capture.output(unmatched),collapse = "\n"))
     get(m_check$fun)(txt)
   }
@@ -71,7 +71,7 @@ check_n <- function(x, y, by, n_check){
   if (n_check$lgl && nrow(
     unmatched <- dplyr::setdiff(dplyr::distinct(y[by$y]),
                                 `names<-`(dplyr::distinct(x[by$x]),by$y)))) {
-    txt <- paste("y has unmatched sets of joining values: \n%s",
+    txt <- paste("y has unmatched sets of joining values: \n",
                  paste(utils::capture.output(unmatched),collapse = "\n"))
     get(n_check$fun)(txt)
   }
