@@ -60,6 +60,13 @@ it is a potentially expensive operation so you must opt into it.}
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
 
+\item{na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
+different, like joins for database sources, similarly to
+\code{merge(incomparables = FALSE)}.
+The default, \code{"na"}, always treats two \code{NA} or \code{NaN} values as equal, like \code{\link[=merge]{merge()}}.
+Users and package authors can change the default behavior by calling
+\code{pkgconfig::set_config("dplyr::na_matches" = "never")}.}
+
 \item{match_fun}{passed to \code{fuzzyjoin::fuzzy_join}. Vectorized function
 given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
 match. Can be a list of functions one for each pair of columns specified in
@@ -77,8 +84,6 @@ values will be kept}
 \item{keep}{If \code{TRUE} the by columns are kept in the nesting joins.}
 
 \item{name}{the name of the list column nesting joins create. If \code{NULL} the name of \code{y} is used.}
-
-\item{mode}{type of join on build on, a left join by default}
 }
 \description{
 Wrappers around \emph{dplyr}'s joining function that allow to check a variety of

@@ -14,10 +14,10 @@ eat(.x, .y, ..., .by = NULL,
 \item{.x, .y}{tbls to join}
 
 \item{...}{One or more unquoted expressions, passed to \code{dplyr::select},
-defining the columns to keep from \code{y}}
+defining the columns to keep from \code{.y}}
 
 \item{.by}{a character vector of variables to join by, or a formula defining
-a joining condition using functions a notation such as
+a joining condition using a notation such as
 \code{~ X("var1") > Y("var2") & X("var3") < Y("var4")}}
 
 \item{.na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
@@ -26,23 +26,25 @@ different, like joins for database sources, similarly to}
 \item{.match_fun}{passed to \code{fuzzyjoin::fuzzy_join}. Vectorized function
 given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
 match. Can be a list of functions one for each pair of columns specified in
-by (if a named list, it uses the names in x). If only one function is given
+by (if a named list, it uses the names in \code{.x}). If only one function is given
 it is used on all column pairs.}
 
-\item{.agg}{function or formula or \code{NULL}, if not \code{NULL}, \code{y}
-will be grouped by its \code{by} columns and \code{fun} will be applied to
-all kept columns from {y}}
+\item{.agg}{function or formula or \code{NULL}, if not \code{NULL}, \code{.y}
+will be grouped by its \code{.by} columns and \code{.agg} will be applied to
+all kept columns from \code{.y}.}
 
 \item{.check}{a string, see details about \code{check} parameter in ?safe_joins}
 
 \item{.conflict}{if \code{NULL}, in case of column conflict both columns are
 suffixed as in \emph{dplyr}, if a function of two parameters or a formula,
-a function is applied on both columns. If the string "patch", matched
-values from \code{y} will overwrite existing values in \code{x} while the other
+a function is applied on both columns. If the string \code{"patch"}, matched
+values from \code{.y} will overwrite existing values in \code{.x} while the other
 values will be kept`}
 
 \item{.prefix}{prefix of new columns or function/formula to apply on names of new
 columns}
+
+\item{.fill}{if not \code{NULL}, value to fill missing values in eaten columns}
 
 \item{.mode}{type of join on build on, a left join by default}
 }

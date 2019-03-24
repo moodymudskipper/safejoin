@@ -4,7 +4,7 @@
 \name{safejoin-package}
 \alias{safejoin}
 \alias{safejoin-package}
-\title{safejoin: Wrappers around `dplyr` and `fuzzyjoin`s functions to join safely using various checks.}
+\title{safejoin: Join safely and Deal with Conflicting Columns}
 \description{
 The package *safejoin* features wrappers around packages *dplyr* and
     *fuzzyjoin*'s functions to join safely using various checks. It also comes
