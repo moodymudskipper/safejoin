@@ -44,7 +44,6 @@
 #'   a function is applied on both columns. If the string "patch", matched
 #'   values from `y` will overwrite existing values in `x` while the other
 #'   values will be kept
-#' @param mode type of join on build on, a left join by default
 #'
 #' @name safe_joins
 NULL
@@ -57,7 +56,7 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
                       check = "~blC", conflict = NULL,
                       mode = c("left","right","inner","full","semi","anti","nest")){
   mode <- match.arg(mode)
-  join <- getFromNamespace(paste0(mode,"_join"), "dplyr")
+  join <- utils::getFromNamespace(paste0(mode,"_join"), "dplyr")
 
   ##############################
   # HANDLE FORMULA INPUT OF BY #
@@ -65,8 +64,10 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
   multi_by <- NULL
   if (inherits(by, "formula")) {
     multi_by <- lapply(extract_xy_content(by), unique)
-    multi_by$x <- purrr::map_chr(multi_by$x, ~if(is.numeric(.)) names(x)[.] else .)
-    multi_by$y <- purrr::map_chr(multi_by$y, ~if(is.numeric(.)) names(y)[.] else .)
+    multi_by$x <- purrr::map_chr(multi_by$x,~ (
+      if (is.numeric(.)) names(x)[.] else .))
+    multi_by$y <- purrr::map_chr(multi_by$y, ~ (
+      if(is.numeric(.)) names(y)[.] else .))
     if (!is.null(match_fun))
       rlang::abort("Don't provide match_fun if you specify by as a formula")
     match_fun <- by
@@ -78,15 +79,13 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
   L <- safe_check(x = x, y = y, by = by, check = check, conflict = conflict,
                   suffix = suffix, match_fun = match_fun, agg = NULL, prefix = NULL, dots = NULL)
   with(L, {
-
-    #browser()
     if (!is.null(match_fun)) {
       ###############
       # FUZZY JOINS #
       ###############
       if (is.null(multi_by)) {
         # standard fuzzy join
-        res <- fuzzyjoin:::fuzzy_join(
+        res <- fuzzyjoin::fuzzy_join(
           x, y, by = `names<-`(by$y,by$x),
           match_fun = rlang::as_function(match_fun),
           mode = mode)
