@@ -1,5 +1,5 @@
 Package: safejoin
-Title: Wrappers around `dplyr` and `fuzzyjoin`s functions to join safely using various checks.
+Title: Join safely and Deal with Conflicting Columns
 Version: 0.1.0
 Authors@R:
     person(given = "Antoine",
@@ -20,7 +20,8 @@ Imports:
     rlang,
     purrr,
     stats,
-    utils
+    utils,
+    fuzzyjoin
 Suggests: knitr,
     rmarkdown,
     testthat
