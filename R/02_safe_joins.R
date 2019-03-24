@@ -78,53 +78,58 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
   ###############
   L <- safe_check(x = x, y = y, by = by, check = check, conflict = conflict,
                   suffix = suffix, match_fun = match_fun, agg = NULL, prefix = NULL, dots = NULL)
-  with(L, {
-    if (!is.null(match_fun)) {
-      ###############
-      # FUZZY JOINS #
-      ###############
-      if (is.null(multi_by)) {
-        # standard fuzzy join
-        res <- fuzzyjoin::fuzzy_join(
-          x, y, by = `names<-`(by$y,by$x),
-          match_fun = rlang::as_function(match_fun),
-          mode = mode)
-      } else {
-        # using multi_by or safejoin formula notation
-        res <- fuzzyjoin::fuzzy_join(
-          x, y,
-          multi_by = by,
-          multi_match_fun = rlang::as_function(match_fun),
-          mode = mode)
-        check_fuzzy_conflicts(res, check, x , y)
-      }
-    } else if (mode %in% c("left","right","inner","full")) {
-      ##################
-      # STANDARD JOINS #
-      ##################
-      res <- join(
-        x, y, by = `names<-`(by$y,by$x), copy, suffix, na_matches = na_matches)
-    } else if (mode %in% c("semi","anti")) {
-      ###################
-      # SEMI/ANTI JOINS #
-      ###################
-      res <- join(
-        x, y, by = `names<-`(by$y,by$x), copy, na_matches = na_matches)
-    } else if (mode == "nest") {
-      #############
-      # NEST JOIN #
-      #############
-      res <- join(
-        x, y, by = `names<-`(by$y,by$x), copy, keep, name)
+  x <- L$x
+  y <- L$y
+  by    <- L$by
+  patch <- L$patch
+  apply_conflict_fun <- L$apply_conflict_fun
+  conflict_fun       <- L$conflict_fun
+  conflicted_nms     <- L$conflicted_nms
+  if (!is.null(match_fun)) {
+    ###############
+    # FUZZY JOINS #
+    ###############
+    if (is.null(multi_by)) {
+      # standard fuzzy join
+      res <- fuzzyjoin::fuzzy_join(
+        x, y, by = `names<-`(by$y,by$x),
+        match_fun = rlang::as_function(match_fun),
+        mode = mode)
+    } else {
+      # using multi_by or safejoin formula notation
+      res <- fuzzyjoin::fuzzy_join(
+        x, y,
+        multi_by = by,
+        multi_match_fun = rlang::as_function(match_fun),
+        mode = mode)
+      check_fuzzy_conflicts(res, check, x , y)
     }
+  } else if (mode %in% c("left","right","inner","full")) {
+    ##################
+    # STANDARD JOINS #
+    ##################
+    res <- join(
+      x, y, by = `names<-`(by$y,by$x), copy, suffix, na_matches = na_matches)
+  } else if (mode %in% c("semi","anti")) {
+    ###################
+    # SEMI/ANTI JOINS #
+    ###################
+    res <- join(
+      x, y, by = `names<-`(by$y,by$x), copy, na_matches = na_matches)
+  } else if (mode == "nest") {
+    #############
+    # NEST JOIN #
+    #############
+    res <- join(
+      x, y, by = `names<-`(by$y,by$x), copy, keep, name)
+  }
 
-    #####################
-    # RESOLVE CONFLICTS #
-    #####################
-    res <- resolve_conflicts(
-      res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
-    res
-  })
+  #####################
+  # RESOLVE CONFLICTS #
+  #####################
+  res <- resolve_conflicts(
+    res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
+  res
 }
 
 

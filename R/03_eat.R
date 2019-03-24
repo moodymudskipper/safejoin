@@ -85,73 +85,59 @@ eat <- function(.x, .y, ..., .by = NULL,
   L <- safe_check(x = .x, y = .y, by = .by, match_fun = .match_fun,
                   check = .check, conflict = .conflict, in_eat = TRUE,
                   suffix = c(".x",".y"),
-                  agg = .agg, prefix = .prefix, dots = rlang::enquos(...)) #eval(substitute(alist(...))))
-  with(L,{
-    if (!is.null(.match_fun)) {
-      ###############
-      # FUZZY JOINS #
-      ###############
-      if (is.null(multi_by)) {
-        # standard fuzzy join
-        res <- fuzzyjoin::fuzzy_join(
-          x, y, by = `names<-`(by$y,by$x),
-          match_fun = rlang::as_function(.match_fun),
-          mode = .mode)
-      } else {
-        # using multi_by or safejoin formula notation
-        res <- fuzzyjoin::fuzzy_join(
-          x, y,
-          multi_by = by,
-          multi_match_fun = rlang::as_function(.match_fun),
-          mode = .mode)
-        check_fuzzy_conflicts(res, .check, x, y)
-      }
+                  agg = .agg, prefix = .prefix, dots = rlang::enquos(...))
+  x <- L$x
+  y <- L$y
+  by    <- L$by
+  patch <- L$patch
+  apply_conflict_fun <- L$apply_conflict_fun
+  conflict_fun       <- L$conflict_fun
+  conflicted_nms     <- L$conflicted_nms
+
+  if (!is.null(.match_fun)) {
+    ###############
+    # FUZZY JOINS #
+    ###############
+    if (is.null(multi_by)) {
+      # standard fuzzy join
+      res <- fuzzyjoin::fuzzy_join(
+        x, y, by = `names<-`(by$y,by$x),
+        match_fun = rlang::as_function(.match_fun),
+        mode = .mode)
     } else {
-      ##################
-      # STANDARD JOINS #
-      ##################
-      join <- utils::getFromNamespace(paste0(.mode,"_join"), "dplyr")
-      res <- join(
-        x, y, by = `names<-`(by$y,by$x), na_matches = .na_matches)
+      # using multi_by or safejoin formula notation
+      res <- fuzzyjoin::fuzzy_join(
+        x, y,
+        multi_by = by,
+        multi_match_fun = rlang::as_function(.match_fun),
+        mode = .mode)
+      check_fuzzy_conflicts(res, .check, x, y)
     }
-    #####################
-    # RESOLVE CONFLICTS #
-    #####################
-    res <- resolve_conflicts(
-      res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
+  } else {
+    ##################
+    # STANDARD JOINS #
+    ##################
+    join <- utils::getFromNamespace(paste0(.mode,"_join"), "dplyr")
+    res <- join(
+      x, y, by = `names<-`(by$y,by$x), na_matches = .na_matches)
+  }
+  #####################
+  # RESOLVE CONFLICTS #
+  #####################
+  res <- resolve_conflicts(
+    res, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
 
-    ########
-    # FILL #
-    ########
-    if(!is.null(.fill)){
-      # relevant columns are those from y (already renamed) that are not conflicted
-      # to these must be added cols ending with ".y" that are not part of
-      # x, as it means they've been added by the joining fun
-      suffixed <- setdiff(grep("\\.y$",names(res), value = TRUE),
-                          paste0(names(x)))
-      nms <- union(setdiff(names(y), names(x)), suffixed)
-      res[nms][is.na(res[nms])] <- .fill
-    }
-    res
-  })
+  ########
+  # FILL #
+  ########
+  if (!is.null(.fill)) {
+    # relevant columns are those from y (already renamed) that are not conflicted
+    # to these must be added cols ending with ".y" that are not part of
+    # x, as it means they've been added by the joining fun
+    suffixed <- setdiff(grep("\\.y$",names(res), value = TRUE),
+                        paste0(names(x)))
+    nms <- union(setdiff(names(y), names(x)), suffixed)
+    res[nms][is.na(res[nms])] <- .fill
+  }
+  res
 }
-
-
-
-# eat.list <- function(.x, .y, ..., .by = NULL,
-#                      .na_matches = pkgconfig::get_config("dplyr::na_matches"),
-#                      .agg = NULL,
-#                      .check = "~blC",
-#                      .conflict = NULL,
-#                      .prefix = NULL,
-#                      .mode = c("left","right","inner","full")){
-#   Reduce(function(x,y) eat(x,y, ..., .by = .by, .agg = .agg, .check = .check,
-#                            .conflict = .conflict, .prefix = .prefix,
-#                            .join = .join),.y, .x)
-# }
-#
-# debugonce(eat)
-# eat.list(band_instruments,list(band_members, band_members),.by="name", .prefix = "Z")
-# # debugonce(eat)
-# # debugonce(safe_check)
-#
