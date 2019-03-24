@@ -41,6 +41,7 @@ resolve_conflicts <- function(
 }
 
 rename_to_conflicted <- function(x) paste0("...", x, "_conflicted...")
+rename_to_unconflicted <- function(x) gsub("^\\.\\.\\.(.*?)_conflicted\\.\\.\\.$","\\1",x)
 
 # with_friendly_dot_error <- function(fun){
 #   fiendly_fun <- fun
