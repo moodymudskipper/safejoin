@@ -10,14 +10,31 @@ extract_xy_content <- function(e, xy = list(x = list(),y = list())) {
   xy
 }
 
-# extracts relevant subset of matrix or vector
+#' Select a variable from to opperate a fuzzy join
+#'
+#' #' Should be called only inside a formula fed to the match_fun argument of a
+#' safejoin function.
+#'
+#' Use `X` to select a variable from the lhs, and `Y` to select a variable from
+#' the rhs, calls to `X` and `Y` will be detected to register the variables used
+#' so that the proper cartesian product can be operated.
+#'
+#' @param var a string containing the name of the variable to select
+#' @export
+#' @name XY
 X <- function(var){
+  if (identical(parent.frame(), .GlobalEnv))
+    stop("X shouldn't be called from the global environment")
   eval.parent(substitute({
     if (is.matrix(.x)) .x[,var] else .x
   }))
 }
 
+#' @export
+#' @rdname XY
 Y <- function(var){
+  if (identical(parent.frame(), .GlobalEnv))
+    stop("Y shouldn't be called from the global environment")
   eval.parent(substitute({
     if (is.matrix(.y)) {
       if(is.numeric(var) || var %in% colnames(.y)) .y[,var] else .y[,rename_to_conflicted(var)]
