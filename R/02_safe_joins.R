@@ -34,7 +34,7 @@
 #' @inheritParams dplyr::join
 #' @param x,y	tbls to join
 #' @param check a string, see details
-#' @param match_fun	 passed to `fuzzyjoin::fuzzy_join`. Vectorized function
+#' @param match_fun	Vectorized function
 #'   given two columns, returning `TRUE` or `FALSE` as to whether they are a
 #'   match. Can be a list of functions one for each pair of columns specified in
 #'   by (if a named list, it uses the names in x). If only one function is given
@@ -91,13 +91,13 @@ safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
     ###############
     if (is.null(multi_by)) {
       # standard fuzzy join
-      res <- fuzzyjoin::fuzzy_join(
+      res <- fuzzy_join(
         x, y, by = `names<-`(by$y,by$x),
         match_fun = rlang::as_function(match_fun),
         mode = mode)
     } else {
       # using multi_by or safejoin formula notation
-      res <- fuzzyjoin::fuzzy_join(
+      res <- fuzzy_join(
         x, y,
         multi_by = by,
         multi_match_fun = rlang::as_function(match_fun),
