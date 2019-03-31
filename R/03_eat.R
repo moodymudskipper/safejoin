@@ -14,7 +14,7 @@
 #'   `~ X("var1") > Y("var2") & X("var3") < Y("var4")`
 #' @param .na_matches	 Use `"never"` to always treat two `NA` or `NaN` values as
 #'   different, like joins for database sources, similarly to
-#' @param .match_fun	 passed to `fuzzyjoin::fuzzy_join`. Vectorized function
+#' @param .match_fun Vectorized function
 #'   given two columns, returning `TRUE` or `FALSE` as to whether they are a
 #'   match. Can be a list of functions one for each pair of columns specified in
 #'   by (if a named list, it uses the names in `.x`). If only one function is given
@@ -44,14 +44,14 @@ eat <- function(.x, .y, ..., .by = NULL,
                 .prefix = NULL,
                 .fill = NULL,
                 .mode = c("left","right","inner","full")) {
-
   .mode <- match.arg(.mode)
 
-  ############################
-  # HANDLE .y IF IT'S A LIST #
-  ############################
+  ######################
+  # HANDLE LIST INPUTS #
+  ######################
 
-  if (is.list(.y) && !is.data.frame(.y)) {
+  # if .y is a list
+  if (is.data.frame(.x) && is.list(.y) && !is.data.frame(.y)) {
     dots <- rlang::enquos(...)
     res <- purrr::reduce2(
       .y, rlang::names2(.y), .init = .x,
@@ -59,8 +59,50 @@ eat <- function(.x, .y, ..., .by = NULL,
         .x, .y, !!!dots, .by = .by, .na_matches = .na_matches,
         .match_fun = .match_fun, .agg = .agg, .check = .check,
         .conflict = .conflict, .fill = .fill, .mode = .mode,
+        # if list element is unnamed we'll use prefix to rename it
         .prefix = if(..3 != "") ..3 else .prefix))
     return(res)
+  }
+
+  # if .x is a list
+  if (missing(.y) && is.list(.x) && !is.data.frame(.x)) {
+    dots <- rlang::enquos(...)
+    .y <- .x[-1]
+    .x <- .x[[1]]
+    res <- purrr::reduce2(
+      .y, rlang::names2(.y), .init = .x,
+      ~ eat(
+        .x, .y, !!!dots, .by = .by, .na_matches = .na_matches,
+        .match_fun = .match_fun, .agg = .agg, .check = .check,
+        .conflict = .conflict, .fill = .fill, .mode = .mode,
+        # if list element is unnamed we'll use prefix to rename it
+        .prefix = if(..3 != "") ..3 else .prefix))
+    return(res)
+  }
+
+  ###########################
+  # HANDLE VARS INPUT OF BY #
+  ###########################
+
+  # # if .by is a single quosures (plural) element, put it in a list
+  # if(inherits(.by, "quosures"))
+  #   .by <- list(.by)
+
+  # if .by contains quosure elements, put them together into one quosures element
+  quosure_elements_lgl <- purrr::map_lgl(.by, inherits, "quosure")
+  quosures_elements_lgl <- purrr::map_lgl(.by, inherits, "quosures")
+  if (any(quosures_elements_lgl) || any(quosure_elements_lgl)){
+    quosures_elements <- c(unlist(.by[quosures_elements_lgl], FALSE),
+                           .by[quosure_elements_lgl])
+    quosures_elements <- as.list(quosures_elements)
+    class(quosures_elements) <- "quosures"
+    additional_by <-
+      intersect(tbl_at_vars(.x, quosures_elements),
+                tbl_at_vars(.y, quosures_elements))
+    .by <- c(unclass(.by[!quosures_elements_lgl & !quosure_elements_lgl]),additional_by)
+    # following has to go when we implement #33:
+    .by <- unlist(.by)
+    if(is.null(.by)) abort("No .by columns are compatible with given argument")
   }
 
   ##############################
@@ -68,7 +110,9 @@ eat <- function(.x, .y, ..., .by = NULL,
   ##############################
   multi_by <- NULL
   if (inherits(.by, "formula")) {
+    # get lists of indices of elements registered by X and Y
     multi_by <- lapply(extract_xy_content(.by), unique)
+    # convert numeric indices to character
     multi_by$x <- purrr::map_chr(
       multi_by$x, ~if(is.numeric(.)) ..2[.] else ., names(.x))
     multi_by$y <- purrr::map_chr(
@@ -100,13 +144,13 @@ eat <- function(.x, .y, ..., .by = NULL,
     ###############
     if (is.null(multi_by)) {
       # standard fuzzy join
-      res <- fuzzyjoin::fuzzy_join(
+      res <- fuzzy_join(
         x, y, by = `names<-`(by$y,by$x),
         match_fun = rlang::as_function(.match_fun),
         mode = .mode)
     } else {
       # using multi_by or safejoin formula notation
-      res <- fuzzyjoin::fuzzy_join(
+      res <- fuzzy_join(
         x, y,
         multi_by = by,
         multi_match_fun = rlang::as_function(.match_fun),
