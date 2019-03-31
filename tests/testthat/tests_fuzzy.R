@@ -117,16 +117,16 @@ test_that("fuzzy joins, work with conflict argument", {
   # this used to bug because we used multi_by instead of by in one spot
   # and because our temp names were not syntactic and fuzzyjoin doesn't like
   # that because `select_` doesn't like that
-  DF1 <- data.frame("col1" = rep(c("A","B"), 18),
-                    "col2" = rep(c("C","D","E"), 12),
-                    "value"= (sample(1:100,36)),
-                    "col4" = rep(NA,36))
+  DF1 <- data.frame("col1"  = rep(c("A","B"), 18),
+                    "col2"  = rep(c("C","D","E"), 12),
+                    "value" = (sample(1:100,36)),
+                    "col4"  = rep(NA,36))
 
   DF2 <- data.frame("col1" = rep("A",6),
                     "col2" = rep(c("C","D"),3),
                     "data" = rep(c(1,3),3),
-                    "min" = seq(0,59,by=10),
-                    "max" = seq(10,69,by=10))
+                    "min"  = seq(0,59,by = 10),
+                    "max"  = seq(10,69,by = 10))
   expect_silent(safe_left_join(DF1, DF2,  ~
                  X("col1") == Y("col1") &
                  X("col2") == Y("col2") &
