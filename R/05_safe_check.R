@@ -1,8 +1,4 @@
 
-# check_u <- function(x, y, by, u_check){
-#
-# }
-#
 check_d <- function(x, y, by, d_check, dots){
   if (d_check$lgl && length(dots) == 0) {
     if (d_check$fun == "abort") {
@@ -36,7 +32,7 @@ safe_check <- function(x, y, by, check, conflict, suffix, match_fun, in_eat = FA
 
   # check if levels are the same on both sides, convert if relevant
   # irrelevant for fuzzy matches (in the general case)
-  if (is.null(match_fun)){
+  if (is.null(match_fun)) {
   L <- check_l(x, y, by, l_check)
   x <- L$x
   y <- L$y
@@ -131,7 +127,6 @@ safe_check <- function(x, y, by, check, conflict, suffix, match_fun, in_eat = FA
     }
   }
 
-
   # check y unicity
   v_check <- check_for_letter(check,"v")
   if (v_check$lgl && anyDuplicated(y[by$y])) {
@@ -140,6 +135,3 @@ safe_check <- function(x, y, by, check, conflict, suffix, match_fun, in_eat = FA
   }
   dplyr::lst(x, y, by, patch, apply_conflict_fun, conflict_fun, conflicted_nms)
 }
-
-
-# safe_check_dot_friendly <- with_friendly_dot_error(safe_check)

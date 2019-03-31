@@ -21,10 +21,11 @@ Imports:
     purrr,
     stats,
     utils,
-    fuzzyjoin
+    tibble
 Suggests: knitr,
     rmarkdown,
-    testthat
+    testthat,
+    fuzzyjoin
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
