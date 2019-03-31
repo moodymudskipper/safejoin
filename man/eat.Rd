@@ -23,7 +23,7 @@ a joining condition using a notation such as
 \item{.na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
 different, like joins for database sources, similarly to}
 
-\item{.match_fun}{passed to \code{fuzzyjoin::fuzzy_join}. Vectorized function
+\item{.match_fun}{Vectorized function
 given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
 match. Can be a list of functions one for each pair of columns specified in
 by (if a named list, it uses the names in \code{.x}). If only one function is given

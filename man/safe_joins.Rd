@@ -67,7 +67,7 @@ The default, \code{"na"}, always treats two \code{NA} or \code{NaN} values as eq
 Users and package authors can change the default behavior by calling
 \code{pkgconfig::set_config("dplyr::na_matches" = "never")}.}
 
-\item{match_fun}{passed to \code{fuzzyjoin::fuzzy_join}. Vectorized function
+\item{match_fun}{Vectorized function
 given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
 match. Can be a list of functions one for each pair of columns specified in
 by (if a named list, it uses the names in x). If only one function is given
