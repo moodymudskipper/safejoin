@@ -37,7 +37,7 @@ Y <- function(var){
     stop("Y shouldn't be called from the global environment")
   eval.parent(substitute({
     if (is.matrix(.y)) {
-      if(is.numeric(var) || var %in% colnames(.y)) .y[,var] else .y[,rename_to_conflicted(var)]
+      if(is.numeric(var) || var %in% colnames(.y)) .y[,var] else .y[,safejoin:::rename_to_conflicted(var)]
         } else .y
   }))
 }
