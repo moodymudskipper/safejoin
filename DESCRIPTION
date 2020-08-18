@@ -22,10 +22,12 @@ Imports:
     stats,
     utils,
     tibble
-Suggests: knitr,
+Suggests: 
+    knitr,
     rmarkdown,
     testthat,
-    fuzzyjoin
+    fuzzyjoin,
+    covr
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)

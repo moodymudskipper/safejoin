@@ -1,5 +1,7 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/moodymudskipper/safejoin.svg?branch=master)](https://travis-ci.com/moodymudskipper/safejoin) [![Codecov test coverage](https://codecov.io/gh/moodymudskipper/safejoin/branch/master/graph/badge.svg)](https://codecov.io/gh/moodymudskipper/safejoin?branch=master) <!-- badges: end -->
+
 safejoin
 --------
 
@@ -158,7 +160,7 @@ safe_left_join(band_members_extended,
                by = c("name","cooks"),
                check = "~m")
 #> x has unmatched sets of joining values: 
-#> %s # A tibble: 2 x 2
+#>  # A tibble: 2 x 2
 #>   name  cooks    
 #>   <chr> <chr>    
 #> 1 Mick  pasta    
@@ -180,7 +182,7 @@ safe_left_join(band_members_extended,
                by = c("name","cooks"),
                check = "~n")
 #> y has unmatched sets of joining values: 
-#> %s # A tibble: 2 x 2
+#>  # A tibble: 2 x 2
 #>   name  cooks
 #>   <chr> <chr>
 #> 1 Paul  pasta
@@ -286,6 +288,7 @@ safe_left_join(band_members_extended,
 #> The pair cooks/cooks don't have the same levels:
 #> x: pasta, pizza, spaghetti
 #> y: pasta, pizza
+#> They'll be coerced to character
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <chr>     <chr> 
@@ -393,6 +396,7 @@ band_members_extended %>%
 #> Warning: The pair cooks/cooks don't have the same levels:
 #> x: pasta, pizza, spaghetti
 #> y: pasta, pizza
+#> They'll be coerced to character
 #> # A tibble: 4 x 4
 #>   name  band    cooks     plays 
 #>   <chr> <chr>   <chr>     <chr> 

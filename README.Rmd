@@ -2,7 +2,10 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/moodymudskipper/safejoin.svg?branch=master)](https://travis-ci.com/moodymudskipper/safejoin)
+[![Codecov test coverage](https://codecov.io/gh/moodymudskipper/safejoin/branch/master/graph/badge.svg)](https://codecov.io/gh/moodymudskipper/safejoin?branch=master)
+<!-- badges: end -->
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
