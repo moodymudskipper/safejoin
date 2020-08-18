@@ -29,7 +29,7 @@ resolve_conflicts <- function(
     rows_lgl <- !is.na(res[[dummy_col]])
     temp_cols <-  safejoin:::rename_to_conflicted(common_aux)
     res[rows_lgl, common_aux] <- res[rows_lgl,temp_cols]
-    res <- dplyr::mutate_at(res,c(dummy_col,temp_cols), ~NULL)
+    res <- dplyr::select(res, -one_of(dummy_col, temp_cols))   # dplyr::mutate_at(res,c(dummy_col,temp_cols), ~NULL)
   } else if (apply_conflict_fun) {
     for (aux in common_aux) {
       res[[aux]] <- conflict_fun(res[[aux]], res[[safejoin:::rename_to_conflicted(aux)]])
