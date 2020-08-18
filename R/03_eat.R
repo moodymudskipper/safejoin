@@ -36,7 +36,7 @@
 #' @return a data frame
 #' @export
 eat <- function(.x, .y, ..., .by = NULL,
-                .na_matches = pkgconfig::get_config("dplyr::na_matches"),
+                .na_matches = c("na", "never"),
                 .match_fun = NULL,
                 .agg = NULL,
                 .check = "~blC",
@@ -44,6 +44,7 @@ eat <- function(.x, .y, ..., .by = NULL,
                 .prefix = NULL,
                 .fill = NULL,
                 .mode = c("left","right","inner","full")) {
+  .na_matches <- match.arg(.na_matches)
   .mode <- match.arg(.mode)
 
   ######################
@@ -91,7 +92,7 @@ eat <- function(.x, .y, ..., .by = NULL,
   # if .by contains quosure elements, put them together into one quosures element
   quosure_elements_lgl <- purrr::map_lgl(.by, inherits, "quosure")
   quosures_elements_lgl <- purrr::map_lgl(.by, inherits, "quosures")
-  if (any(quosures_elements_lgl) || any(quosure_elements_lgl)){
+  if (any(quosures_elements_lgl) || any(quosure_elements_lgl)) {
     quosures_elements <- c(unlist(.by[quosures_elements_lgl], FALSE),
                            .by[quosure_elements_lgl])
     quosures_elements <- as.list(quosures_elements)
@@ -102,7 +103,7 @@ eat <- function(.x, .y, ..., .by = NULL,
     .by <- c(unclass(.by[!quosures_elements_lgl & !quosure_elements_lgl]),additional_by)
     # following has to go when we implement #33:
     .by <- unlist(.by)
-    if(is.null(.by)) abort("No .by columns are compatible with given argument")
+    if (is.null(.by)) abort("No .by columns are compatible with given argument")
   }
 
   ##############################
