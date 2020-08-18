@@ -14,6 +14,7 @@
 #'   `~ X("var1") > Y("var2") & X("var3") < Y("var4")`
 #' @param .na_matches	 Use `"never"` to always treat two `NA` or `NaN` values as
 #'   different, like joins for database sources, similarly to
+#'   ` merge(incomparables = FALSE).`
 #' @param .match_fun Vectorized function
 #'   given two columns, returning `TRUE` or `FALSE` as to whether they are a
 #'   match. Can be a list of functions one for each pair of columns specified in
