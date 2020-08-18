@@ -51,10 +51,11 @@ NULL
 library(rlang)
 safe_join <- function(x, y, by = NULL, copy = FALSE, keep = FALSE, name = NULL,
                       suffix = c(".x", ".y"),
-                      na_matches = pkgconfig::get_config("dplyr::na_matches"),
+                      na_matches = c("na", "never"),
                       match_fun = NULL,
                       check = "~blC", conflict = NULL,
                       mode = c("left","right","inner","full","semi","anti","nest")){
+  na_matches <- match.arg(na_matches)
   mode <- match.arg(mode)
   join <- utils::getFromNamespace(paste0(mode,"_join"), "dplyr")
 
