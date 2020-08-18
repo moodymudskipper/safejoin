@@ -75,7 +75,7 @@ fuzzy_join <- function(x, y, by = NULL, match_fun = NULL,
     # add .x to those that are missing; they've been renamed
     g[missing] <- paste0(g[missing], ".x")
 
-    dplyr::group_by_(d, .dots = g)
+    dplyr::group_by_at(d, g)
   }
 
 
@@ -98,12 +98,12 @@ fuzzy_join <- function(x, y, by = NULL, match_fun = NULL,
 
       indices_x <- tibble::tibble(col = col_x,
                                      indices = seq_along(col_x)) %>%
-        tidyr::nest(indices) %>%
+        tidyr::nest_legacy(indices) %>%
         dplyr::mutate(indices = purrr::map(data, "indices"))
 
       indices_y <- tibble::tibble(col = col_y,
                                      indices = seq_along(col_y)) %>%
-        tidyr::nest(indices) %>%
+        tidyr::nest_legacy(indices) %>%
         dplyr::mutate(indices = purrr::map(data, "indices"))
 
       u_x <- indices_x$col
@@ -194,14 +194,14 @@ fuzzy_join <- function(x, y, by = NULL, match_fun = NULL,
     number_y_rows <- nrow(y)
 
     indices_x <- x %>%
-      dplyr::select_(.dots = by$x) %>%
+      dplyr::select_at(by$x) %>%
       dplyr::mutate(indices = seq_len(number_x_rows)) %>%
-      tidyr::nest(indices) %>%
+      tidyr::nest_legacy(indices) %>%
       dplyr::mutate(indices = purrr::map(data, "indices"))
     indices_y <- y %>%
-      dplyr::select_(.dots = by$y) %>%
+      dplyr::select(by$y) %>%
       dplyr::mutate(indices = seq_len(number_y_rows)) %>%
-      tidyr::nest(indices) %>%
+      tidyr::nest_legacy(indices) %>%
       dplyr::mutate(indices = purrr::map(data, "indices"))
 
     ux <- as.matrix(indices_x[by$x])
@@ -268,8 +268,8 @@ fuzzy_join <- function(x, y, by = NULL, match_fun = NULL,
 
   # in cases where columns share a name, rename each to .x and .y
   for (n in intersect(colnames(x), colnames(y))) {
-    x <- dplyr::rename_(x, .dots = structure(n, .Names = paste0(n, ".x")))
-    y <- dplyr::rename_(y, .dots = structure(n, .Names = paste0(n, ".y")))
+    x <- dplyr::rename(x, structure(n, .Names = paste0(n, ".x")))
+    y <- dplyr::rename(y, structure(n, .Names = paste0(n, ".y")))
   }
 
   # fill in indices of the x, y, or both

@@ -46,17 +46,15 @@ Y <- function(var){
 check_fuzzy_conflicts <- function(res, check, x, y){
   c_check <- check_for_letter(check, "c")
   new_cols <- setdiff(names(res),c(names(x), names(y)))
-  conflicted_nms <- intersect(sub("1$","",new_cols), c(names(x), names(y)))
+  conflicted_nms <- intersect(sub("\\.{3}\\d$","",new_cols), c(names(x), names(y)))
   if (c_check$lgl && length(conflicted_nms)) {
     # we might have created a new col here by creating a distance column
     # it would have been renamed with a "1" suffix automatically if it was
     # the case, one might have created
     # it on purpose with this name, so let's fail if needed but be explicit
-    txt <- paste0("Fuzzy join created: ", paste_enum(new_cols),
-                  "\nSource table contained: ", paste_enum(conflicted_nms),
-                  "\nIt's probable, but not certain, that there was a ",
-                  "column name conflict.",
-                  "\nConsider renaming the columns of the data frame ",
-                  "returned by the `by` argument or use a less strict check")
+    txt <- paste0(
+      "Some columns created in the `by` argument resulted in conflict: ",
+      toString(conflicted_nms)
+    )
     get(c_check$fun)(txt)
   }}

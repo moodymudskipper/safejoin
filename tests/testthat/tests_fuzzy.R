@@ -60,6 +60,7 @@ test_that("fuzzy joins, adding a column, work with eat", {
   # https://stackoverflow.com/questions/41472722
   set.seed(123)
   mz1    <- c(seq(100, 190, by = 10))
+
   rt1    <- c(seq(1, 10, by = 1))
   value1 <- runif(10, min = 100, max = 100000)
   mz2    <- mz1 + runif(10, -0.1, 0.1)
@@ -76,7 +77,7 @@ test_that("fuzzy joins, adding a column, work with eat", {
     rt_dist <= 0.1 & mz_dist < 0.05
   }
 
-  testthat::expect_equal(
+  testthat::expect_equivalent(
     fuzzyjoin::fuzzy_join(df1, df2, multi_by = c("mz1" = "mz2", "rt1" = "rt2"),
                multi_match_fun = mmf1, mode = "full"),
     eat(df1,df2, .by = ~abs(X(1) - Y(1)) < .05 & abs(X(2) - Y(2)) <= .1,
@@ -88,7 +89,7 @@ test_that("fuzzy joins, adding a column, work with eat", {
     data.frame(merge = rt_dist <= 0.1 & mz_dist < 0.05,
                dist = sqrt(mz_dist^2 + rt_dist^2))
   }
-  testthat::expect_equal(
+  testthat::expect_equivalent(
     fuzzyjoin::fuzzy_join(df1, df2, multi_by = c("mz1" = "mz2", "rt1" = "rt2"),
                multi_match_fun = mmf2, mode = "full"),
     eat(df1,df2, .mode = "full", .by = ~ data.frame(
@@ -107,7 +108,7 @@ test_that("fuzzy joins, adding a column, work with eat", {
     eat(df1,df2, .mode = "full", .by =~ data.frame(
       abs(X(1) - Y(1)) < .05 & abs(X(2) - Y(2)) <= .1,
       rt2 = sqrt(abs(X(1) - Y(1))^2 +  abs(X(2) - Y(2))^2))),
-    "column name conflict.")
+    "Some columns")
 
 })
 
