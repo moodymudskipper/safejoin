@@ -4,11 +4,20 @@
 \alias{eat}
 \title{Eat columns from another data frame}
 \usage{
-eat(.x, .y, ..., .by = NULL,
-  .na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  .match_fun = NULL, .agg = NULL, .check = "~blC",
-  .conflict = NULL, .prefix = NULL, .fill = NULL, .mode = c("left",
-  "right", "inner", "full"))
+eat(
+  .x,
+  .y,
+  ...,
+  .by = NULL,
+  .na_matches = c("na", "never"),
+  .match_fun = NULL,
+  .agg = NULL,
+  .check = "~blC",
+  .conflict = NULL,
+  .prefix = NULL,
+  .fill = NULL,
+  .mode = c("left", "right", "inner", "full")
+)
 }
 \arguments{
 \item{.x, .y}{tbls to join}
@@ -56,6 +65,6 @@ Modified join where only a specified subset of \code{y} is kept, with
 optional checks and transformations.
 }
 \details{
-Character codes are the same as for \code{safe_*_join} functions, with the
+Character codes are the same as for \verb{safe_*_join} functions, with the
 addition of \code{"d"}to check if dots were filled.
 }

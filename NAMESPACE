@@ -3,6 +3,7 @@
 export(X)
 export(Y)
 export(eat)
+export(match_equal)
 export(safe_anti_join)
 export(safe_full_join)
 export(safe_inner_join)

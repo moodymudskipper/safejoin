@@ -11,45 +11,108 @@
 \alias{safe_nest_join}
 \title{Safe joins}
 \usage{
-safe_left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  match_fun = NULL, check = "~blC", conflict = NULL)
+safe_left_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  na_matches = c("na", "never"),
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 
-safe_right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  match_fun = NULL, check = "~blC", conflict = NULL)
+safe_right_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  na_matches = c("na", "never"),
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 
-safe_inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  match_fun = NULL, check = "~blC", conflict = NULL)
+safe_inner_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  na_matches = c("na", "never"),
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 
-safe_full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  match_fun = NULL, check = "~blC", conflict = NULL)
+safe_full_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  na_matches = c("na", "never"),
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 
-safe_semi_join(x, y, by = NULL, copy = FALSE,
-  na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  match_fun = NULL, check = "~blC", conflict = NULL)
+safe_semi_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  na_matches = c("na", "never"),
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 
-safe_anti_join(x, y, by = NULL, copy = FALSE,
-  na_matches = pkgconfig::get_config("dplyr::na_matches"),
-  match_fun = NULL, check = "~blC", conflict = NULL)
+safe_anti_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  na_matches = c("na", "never"),
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 
-safe_nest_join(x, y, by = NULL, copy = FALSE, keep = FALSE,
-  name = NULL, match_fun = NULL, check = "~blC", conflict = NULL)
+safe_nest_join(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  keep = FALSE,
+  name = NULL,
+  match_fun = NULL,
+  check = "~blC",
+  conflict = NULL
+)
 }
 \arguments{
 \item{x, y}{tbls to join}
 
-\item{by}{a character vector of variables to join by.  If \code{NULL}, the
-default, \code{*_join()} will do a natural join, using all variables with
-common names across the two tables. A message lists the variables so
-that you can check they're right (to suppress the message, simply
-explicitly list the variables that you want to join).
+\item{by}{A character vector of variables to join by.
 
-To join by different variables on x and y use a named vector.
-For example, \code{by = c("a" = "b")} will match \code{x.a} to
-\code{y.b}.}
+If \code{NULL}, the default, \verb{*_join()} will perform a natural join, using all
+variables in common across \code{x} and \code{y}. A message lists the variables so that you
+can check they're correct; suppress the message by supplying \code{by} explicitly.
+
+To join by different variables on \code{x} and \code{y}, use a named vector.
+For example, \code{by = c("a" = "b")} will match \code{x$a} to \code{y$b}.
+
+To join by multiple variables, use a vector with length > 1.
+For example, \code{by = c("a", "b")} will match \code{x$a} to \code{y$a} and \code{x$b} to
+\code{y$b}. Use a named vector to match different variables in \code{x} and \code{y}.
+For example, \code{by = c("a" = "b", "c" = "d")} will match \code{x$a} to \code{y$b} and
+\code{x$c} to \code{y$d}.
+
+To perform a cross-join, generating all combinations of \code{x} and \code{y},
+use \code{by = character()}.}
 
 \item{copy}{If \code{x} and \code{y} are not from the same data source,
 and \code{copy} is \code{TRUE}, then \code{y} will be copied into the
@@ -60,12 +123,13 @@ it is a potentially expensive operation so you must opt into it.}
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
 
-\item{na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
-different, like joins for database sources, similarly to
-\code{merge(incomparables = FALSE)}.
-The default, \code{"na"}, always treats two \code{NA} or \code{NaN} values as equal, like \code{\link[=merge]{merge()}}.
-Users and package authors can change the default behavior by calling
-\code{pkgconfig::set_config("dplyr::na_matches" = "never")}.}
+\item{na_matches}{Should \code{NA} and \code{NaN} values match one another?
+
+The default, \code{"na"}, treats two \code{NA} or \code{NaN} values as equal, like
+\code{\%in\%}, \code{\link[=match]{match()}}, \code{\link[=merge]{merge()}}.
+
+Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as different, like
+joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
 
 \item{match_fun}{Vectorized function
 given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a
@@ -81,9 +145,9 @@ a function is applied on both columns. If the string "patch", matched
 values from \code{y} will overwrite existing values in \code{x} while the other
 values will be kept}
 
-\item{keep}{If \code{TRUE} the by columns are kept in the nesting joins.}
-
-\item{name}{the name of the list column nesting joins create. If \code{NULL} the name of \code{y} is used.}
+\item{keep}{Should the join keys from both \code{x} and \code{y} be preserved in the
+output? Only applies to \code{nest_join()}, \code{left_join()}, \code{right_join()}, and
+\code{full_join()}.}
 }
 \description{
 Wrappers around \emph{dplyr}'s joining function that allow to check a variety of

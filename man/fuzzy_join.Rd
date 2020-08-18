@@ -3,11 +3,20 @@
 \name{fuzzy_join}
 \alias{fuzzy_join}
 \title{Join two tables based not on exact matches, but with a function
-describing whether two vectors are matched or not.}
+describing whether two vector
+s are matched or not.}
 \usage{
-fuzzy_join(x, y, by = NULL, match_fun = NULL, multi_by = NULL,
-  multi_match_fun = NULL, index_match_fun = NULL, mode = "inner",
-  ...)
+fuzzy_join(
+  x,
+  y,
+  by = NULL,
+  match_fun = NULL,
+  multi_by = NULL,
+  multi_match_fun = NULL,
+  index_match_fun = NULL,
+  mode = "inner",
+  ...
+)
 }
 \arguments{
 \item{x}{A tbl}
