@@ -30,7 +30,8 @@ a joining condition using a notation such as
 \code{~ X("var1") > Y("var2") & X("var3") < Y("var4")}}
 
 \item{.na_matches}{Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as
-different, like joins for database sources, similarly to}
+different, like joins for database sources, similarly to
+\verb{ merge(incomparables = FALSE).}}
 
 \item{.match_fun}{Vectorized function
 given two columns, returning \code{TRUE} or \code{FALSE} as to whether they are a

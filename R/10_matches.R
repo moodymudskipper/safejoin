@@ -13,10 +13,7 @@
 #' @param ignore_class boolean, if `TRUE` unclass will be used on elements before
 #'   comparison, so for instance tibbles and lists can be
 #'
-#' @return
 #' @export
-#'
-#' @examples
 match_equal <- function(lhs, rhs,
                         ignore_case = FALSE, ignore_element_order = FALSE, ignore_row_order = FALSE, ignore_class = FALSE){
   expl_args   <- as.list(match.call())[-1]
@@ -42,5 +39,3 @@ print.safejoin_match <- function(x,...){
 #
 # test <- list("A","b",1,list("C","d"))
 # rapply(test,tolower,"character",how = "replace")
-
-match_equal(test(aa),zz+yy, TRUE,,T)

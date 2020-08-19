@@ -44,6 +44,8 @@
 fuzzy_join <- function(x, y, by = NULL, match_fun = NULL,
                        multi_by = NULL, multi_match_fun = NULL,
                        index_match_fun = NULL, mode = "inner", ...) {
+  # to avoid cmd check notes :
+  i <- key <- value <- name <- newname <- indices <- data <- NULL
   ###################
   # CHECK ARGUMENTS #
   ###################

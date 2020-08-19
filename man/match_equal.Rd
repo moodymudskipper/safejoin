@@ -31,9 +31,6 @@ comparison}
 \item{ignore_class}{boolean, if \code{TRUE} unclass will be used on elements before
 comparison, so for instance tibbles and lists can be}
 }
-\value{
-
-}
 \description{
 Title
 }

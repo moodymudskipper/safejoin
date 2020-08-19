@@ -35,9 +35,11 @@ X <- function(var){
 Y <- function(var){
   if (identical(parent.frame(), .GlobalEnv))
     stop("Y shouldn't be called from the global environment")
+  # because it's run outside of the namespace we don't use rename_to_conflicted
+  # but copy it's definition
   eval.parent(substitute({
     if (is.matrix(.y)) {
-      if(is.numeric(var) || var %in% colnames(.y)) .y[,var] else .y[,safejoin:::rename_to_conflicted(var)]
+      if (is.numeric(var) || var %in% colnames(.y)) .y[,var] else .y[, paste0("...", var, "_conflicted...")]
         } else .y
   }))
 }

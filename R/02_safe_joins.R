@@ -32,6 +32,7 @@
 #'   characters will be ignored.
 #'
 #' @inheritParams dplyr::join
+#' @inheritParams dplyr::nest_join
 #' @param x,y	tbls to join
 #' @param check a string, see details
 #' @param match_fun	Vectorized function

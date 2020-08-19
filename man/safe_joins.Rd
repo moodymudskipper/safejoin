@@ -148,6 +148,9 @@ values will be kept}
 \item{keep}{Should the join keys from both \code{x} and \code{y} be preserved in the
 output? Only applies to \code{nest_join()}, \code{left_join()}, \code{right_join()}, and
 \code{full_join()}.}
+
+\item{name}{The name of the list column nesting joins create.
+If \code{NULL} the name of \code{y} is used.}
 }
 \description{
 Wrappers around \emph{dplyr}'s joining function that allow to check a variety of

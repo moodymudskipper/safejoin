@@ -21,7 +21,9 @@ Imports:
     purrr,
     stats,
     utils,
-    tibble
+    tibble,
+    tidyr,
+    tidyselect
 Suggests: 
     knitr,
     rmarkdown,
